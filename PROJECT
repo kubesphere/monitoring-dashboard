@@ -1,0 +1,7 @@
+domain: kubesphere.io
+repo: github.com/monitoring-dashboard
+resources:
+- group: monitoring
+  kind: Dashboard
+  version: v1alpha1
+version: "2"

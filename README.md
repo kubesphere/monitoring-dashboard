@@ -113,12 +113,11 @@ Take the datasource Prometheus for example, KubeSphere backend will add a namesp
 
 ### Dashboard Template
 
-Dashboard is represented by a custom resource object. A dashboard template is any dashboard labeled with `dashboard.monitoring.kubesphere.io/template: true`. Dashboard templates are ready-made and portable. They can be shared across the cluster or to specific namespaces. Before sharing, remember to remove confidential content. 
+Dashboard is represented by a custom resource object. Select templates from [contrib/gallery](contrib/gallery), and run the following command to import:
 
-There are two types of dashboard templates:
-
-- **cluster-scoped**: dashboard templates in the namespace `kubesphere-monitoring-system`
-- **namespace-scoped**: those in private namespaces
+```
+kubectl apply --namespace <NAMESPACE> -f contrib/gallery/<TEMPLATE_YAML_FILE>
+```
 
 You can also open source your template and contribute to Dashboard Gallery. Templates in Dashboard Gallery will be shipped with KubeSphere.
 

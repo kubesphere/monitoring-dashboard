@@ -1,0 +1,102 @@
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: Dashboard
+metadata:
+  name: nginx-plus-overview
+spec:
+  datasource: prometheus
+  description: ''
+  panels:
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ''
+      id: 3
+      lines: true
+      stack: false
+      targets:
+        - expr: 'irate(nginx_ingress_nginx_connections_accepted[5m])'
+          legendFormat: '{{instance}} accepted'
+          refId: 1
+          step: 1m
+        - expr: 'irate(nginx_ingress_nginx_connections_handled[5m])'
+          legendFormat: '{{instance}} handled'
+          refId: 2
+          step: 1m
+      title: Processed connections
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ''
+      id: 4
+      lines: true
+      stack: false
+      targets:
+        - expr: nginx_ingress_nginx_connections_active
+          legendFormat: '{{instance}} active'
+          refId: 1
+          step: 1m
+        - expr: nginx_ingress_nginx_connections_reading
+          legendFormat: '{{instance}} reading'
+          refId: 2
+          step: 1m
+        - expr: nginx_ingress_nginx_connections_waiting
+          legendFormat: '{{instance}} waiting'
+          refId: 3
+          step: 1m
+        - expr: nginx_ingress_nginx_connections_writing
+          legendFormat: '{{instance}} writing'
+          refId: 4
+          step: 1m
+      title: Active Connections
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ''
+      id: 5
+      lines: true
+      stack: false
+      targets:
+        - expr: 'irate(nginx_ingress_nginx_http_requests_total[5m])'
+          legendFormat: '{{instance}} total requests'
+          refId: 1
+          step: 1m
+      title: Total requests
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: none
+    - decimals: 0
+      format: none
+      id: 6
+      targets:
+        - expr: nginx_ingress_nginx_up
+      title: NGINX Status
+      type: singlestat
+      valueName: last
+  title: Nginx Plus Overview

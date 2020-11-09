@@ -1,3 +1,4 @@
+# Inspired by https://grafana.com/grafana/dashboards/7362
 apiVersion: monitoring.kubesphere.io/v1alpha1
 kind: Dashboard
 metadata:

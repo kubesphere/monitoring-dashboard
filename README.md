@@ -164,6 +164,8 @@ Time range specifies current dashboard time for display. The following are examp
 
 For dashboard APIs, see [docs/crd.md](docs/crd.md)
 
+The project is built with kubebuilder v2.3.0.
+
 ### Backend
 
 If you find some fields should be included in the CRD, edit [api package](https://github.com/kubesphere/monitoring-dashboard/tree/master/api/v1alpha1) and regenerate the project by `make`. Kubebuilder is the tool we are using.

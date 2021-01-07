@@ -84,6 +84,27 @@ type DashboardList struct {
 	Items           []Dashboard `json:"items"`
 }
 
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:scope="Cluster"
+
+// ClusterDashboard is the Schema for the culsterdashboards API
+type ClusterDashboard struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec DashboardSpec `json:"spec,omitempty"`
+}
+
+// +kubebuilder:object:root=true
+
+// ClusterDashboardList contains a list of ClusterDashboard
+type ClusterDashboardList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []ClusterDashboard `json:"items"`
+}
+
 func init() {
 	SchemeBuilder.Register(&Dashboard{}, &DashboardList{})
+	SchemeBuilder.Register(&ClusterDashboard{}, &ClusterDashboardList{})
 }

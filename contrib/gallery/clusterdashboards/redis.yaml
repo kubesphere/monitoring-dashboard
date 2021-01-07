@@ -1,0 +1,219 @@
+# Inspired by https://grafana.com/grafana/dashboards/11835
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: ClusterDashboard
+metadata:
+  name: redis-overview
+spec:
+  datasource: prometheus
+  description: ""
+  panels:
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 6
+      lines: true
+      stack: false
+      targets:
+        - expr: irate(redis_keyspace_hits_total[5m])
+          legendFormat: Hits
+          refId: 1
+          step: 1m
+        - expr: irate(redis_keyspace_misses_total[5m])
+          legendFormat: Misses
+          refId: 2
+          step: 1m
+      title: Hits / Misses per Sec
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 7
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(redis_net_input_bytes_total[5m])
+          legendFormat: Input
+          refId: 1
+          step: 1m
+        - expr: rate(redis_net_output_bytes_total[5m])
+          legendFormat: Output
+          refId: 2
+          step: 1m
+      title: Network I/O
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: Byte/s
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 8
+      lines: true
+      stack: false
+      targets:
+        - expr: sum (redis_db_keys) by (db)
+          legendFormat: '{{db}}'
+          refId: 1
+          step: 1m
+      title: Total Items per DB
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 9
+      lines: true
+      stack: false
+      targets:
+        - expr: 'sum (redis_db_keys) - sum (redis_db_keys_expiring) '
+          legendFormat: Not Expiring
+          refId: 1
+          step: 1m
+        - expr: 'sum (redis_db_keys_expiring) '
+          legendFormat: Expiring
+          refId: 2
+          step: 1m
+      title: Expiring vs Not-Expiring Keys
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 10
+      lines: true
+      stack: false
+      targets:
+        - expr: sum(rate(redis_expired_keys_total[5m])) by (instance)
+          legendFormat: Expired
+          refId: 1
+          step: 1m
+        - expr: sum(rate(redis_evicted_keys_total[5m])) by (instance)
+          legendFormat: Evicted
+          refId: 2
+          step: 1m
+      title: Expired / Evicted
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 11
+      lines: true
+      stack: false
+      targets:
+        - expr: topk(5, irate(redis_commands_total[3m]))
+          legendFormat: '{{cmd}}'
+          refId: 1
+          step: 1m
+      title: Command Calls / sec
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 12
+      lines: true
+      stack: false
+      targets:
+        - expr: redis_connected_clients
+          legendFormat: total
+          refId: 1
+          step: 1m
+      title: Redis connected clients
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - decimals: 2
+      format: none
+      id: 1
+      targets:
+        - expr: redis_uptime_in_seconds / (3600 * 24)
+      title: Uptime (days)
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 3
+      targets:
+        - expr: redis_connected_clients
+      title: Clients
+      type: singlestat
+      valueName: last
+    - decimals: 2
+      format: percent (0-100)
+      id: 4
+      targets:
+        - expr: redis_memory_used_bytes  / redis_memory_max_bytes
+      title: Memory Usage
+      type: singlestat
+      valueName: last
+    - decimals: 2
+      format: none
+      id: 5
+      targets:
+        - expr: rate(redis_commands_processed_total[2m])
+      title: Commands Executed / sec
+      type: singlestat
+      valueName: last
+  title: Redis Overview

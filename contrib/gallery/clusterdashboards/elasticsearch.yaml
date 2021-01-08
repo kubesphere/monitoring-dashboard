@@ -1,0 +1,464 @@
+# Inspired by https://grafana.com/grafana/dashboards/2322
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: ClusterDashboard
+metadata:
+  name: elasticsearch-overview
+spec:
+  datasource: prometheus
+  description: ""
+  panels:
+    - decimals: 0
+      format: none
+      id: 11
+      targets:
+        - expr: sum by(cluster) (elasticsearch_cluster_health_status{color="red"})
+      title: Red Clusters
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 12
+      targets:
+        - expr: sum by(cluster) (elasticsearch_cluster_health_status{color="yellow"})
+      title: Yellow Clusters
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 14
+      targets:
+        - expr: elasticsearch_cluster_health_number_of_nodes
+      title: Number of Nodes
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 16
+      targets:
+        - expr: elasticsearch_cluster_health_number_of_data_nodes
+      title: Number of Data Nodes
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 17
+      targets:
+        - expr: elasticsearch_cluster_health_number_of_pending_tasks
+      title: Pending Tasks
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 21
+      targets:
+        - expr: sum (elasticsearch_process_open_files_count)
+      title: Open File Descriptors
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 22
+      targets:
+        - expr: elasticsearch_cluster_health_active_primary_shards
+      title: Active primary shards
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 25
+      targets:
+        - expr: elasticsearch_cluster_health_active_shards
+      title: Active shards
+      type: singlestat
+      valueName: last
+    - id: 37
+      title: JVM
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 15
+      lines: true
+      stack: false
+      targets:
+        - expr: sum by(name) (elasticsearch_jvm_memory_used_bytes) / sum by(name) (elasticsearch_jvm_memory_max_bytes)
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: JVM Memory Used
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: percent (0.0-1.0)
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 30
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_jvm_memory_committed_bytes
+          legendFormat: '{{name}} committed: {{area}}'
+          refId: 1
+          step: 1m
+        - expr: elasticsearch_jvm_memory_max_bytes
+          legendFormat: '{{name}} max: {{area}}'
+          refId: 2
+          step: 1m
+      title: JVM Memory Committed
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: Byte
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 27
+      lines: true
+      stack: false
+      targets:
+        - expr: irate(elasticsearch_jvm_gc_collection_seconds_count[3m])
+          legendFormat: '{{name}} {{gc}}'
+          refId: 1
+          step: 1m
+      title: GC Count
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 28
+      lines: true
+      stack: false
+      targets:
+        - expr: irate(elasticsearch_jvm_gc_collection_seconds_sum[3m])
+          legendFormat: '{{name}} {{gc}}'
+          refId: 1
+          step: 1m
+      title: GC Time
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: none
+    - id: 38
+      title: Resource Consumption
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 29
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_os_load1
+          legendFormat: 'load1: {{name}}'
+          refId: 1
+          step: 1m
+        - expr: elasticsearch_os_load5
+          legendFormat: 'load5: {{name}}'
+          refId: 2
+          step: 1m
+        - expr: elasticsearch_os_load15
+          legendFormat: 'load15: {{name}}'
+          refId: 3
+          step: 1m
+      title: Load Average
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 32
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_filesystem_data_available_bytes
+          legendFormat: '{{name}}: {{path}}'
+          refId: 1
+          step: 1m
+      title: Disk Usage
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: Byte
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 33
+      lines: true
+      stack: false
+      targets:
+        - expr: irate(elasticsearch_transport_tx_size_bytes_total[3m])
+          legendFormat: '{{name}}: sent'
+          refId: 1
+          step: 1m
+        - expr: irate(elasticsearch_transport_rx_size_bytes_total[3m])
+          legendFormat: '{{name}}: received'
+          refId: 2
+          step: 1m
+      title: Network Usage
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: Byte
+    - id: 39
+      title: Documents and Indices
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 34
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_indices_docs
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Documents Count on Node
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 26
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_cluster_health_initializing_shards
+          legendFormat: Initializing Shards
+          refId: 1
+          step: 1m
+        - expr: elasticsearch_cluster_health_relocating_shards
+          legendFormat: Relocating Shards
+          refId: 2
+          step: 1m
+        - expr: elasticsearch_cluster_health_active_shards
+          legendFormat: Active Shards
+          refId: 3
+          step: 1m
+        - expr: elasticsearch_cluster_health_active_primary_shards
+          legendFormat: Active Primary Shards
+          refId: 4
+          step: 1m
+        - expr: elasticsearch_cluster_health_unassigned_shards
+          legendFormat: Unassigned Shards
+          refId: 5
+          step: 1m
+        - expr: elasticsearch_cluster_health_delayed_unassigned_shards
+          legendFormat: Delayed Unassigned Shards
+          refId: 6
+          step: 1m
+      title: Shards
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 35
+      lines: true
+      stack: false
+      targets:
+        - expr: 'irate(elasticsearch_indices_search_query_time_seconds[3m]) '
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Query Time
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 42
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_indices_query_cache_memory_size_bytes
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Query Cache Size
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: Byte
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 36
+      lines: true
+      stack: false
+      targets:
+        - expr: irate(elasticsearch_indices_indexing_index_time_seconds_total[5m])
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Indexing Time
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 43
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_indices_segments_count
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Count of Index Segments
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 44
+      lines: true
+      stack: false
+      targets:
+        - expr: elasticsearch_indices_segments_memory_bytes
+          legendFormat: '{{name}}'
+          refId: 1
+          step: 1m
+      title: Current Memory of Segments
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: Byte
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: Total size of stored index data in bytes with all shards on all nodes
+      id: 45
+      lines: true
+      stack: false
+      targets:
+        - expr: sum by(index) (elasticsearch_indices_store_size_bytes_total)
+          legendFormat: '{{index}}'
+          refId: 1
+          step: 1m
+      title: Total Size Stored Index Data
+      type: graph
+      yaxes:
+        - decimals: 3
+          format: Byte
+  title: Elasticsearch Overview

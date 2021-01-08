@@ -1,0 +1,373 @@
+# Inspired by https://grafana.com/grafana/dashboards/7362
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: ClusterDashboard
+metadata:
+  name: mysql-overview
+spec:
+  datasource: prometheus
+  description: ""
+  panels:
+    - decimals: 2
+      format: none
+      id: 2
+      targets:
+        - expr: mysql_global_status_uptime / (3600*24)
+      title: MySQL Uptime (days)
+      type: singlestat
+      valueName: last
+    - decimals: 2
+      format: none
+      id: 3
+      targets:
+        - expr: rate(mysql_global_status_queries[5m]) or irate(mysql_global_status_queries[5m])
+      title: Current QPS
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: Byte
+      id: 6
+      targets:
+        - expr: mysql_global_variables_innodb_buffer_pool_size
+      title: InnoDB Buffer Pool Size
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 9
+      targets:
+        - expr: mysql_global_variables_max_connections
+      title: Max Permitted Connections
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 12
+      targets:
+        - expr: mysql_global_variables_thread_cache_size
+      title: Thread Cache Size
+      type: singlestat
+      valueName: last
+    - decimals: 0
+      format: none
+      id: 21
+      targets:
+        - expr: mysql_global_variables_long_query_time
+      title: Long Query Time (second)
+      type: singlestat
+      valueName: last
+    - id: 4
+      title: Connections and Threads
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: The maximum number of connections that have been in use simultaneously
+        since the server started.
+      id: 8
+      lines: true
+      stack: false
+      targets:
+        - expr: mysql_global_status_max_used_connections
+          legendFormat: Max Used Connections
+          refId: 1
+          step: 1m
+      title: Connections
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: 'Threads Cached: The number of threads in the thread cache. Threads
+      Connected: The number of currently open connections. Threads Created: The number
+      of threads created to handle connections. Threads Running: The number of threads
+      that are not sleeping.'
+      id: 5
+      lines: true
+      stack: false
+      targets:
+        - expr: mysql_global_status_threads_connected
+          legendFormat: Threads Connected
+          refId: 1
+          step: 1m
+        - expr: mysql_global_status_threads_created
+          legendFormat: Threads Created
+          refId: 2
+          step: 1m
+        - expr: mysql_global_status_threads_running
+          legendFormat: Threads Running
+          refId: 3
+          step: 1m
+        - expr: mysql_global_status_threads_cached
+          legendFormat: Threads Cached
+          refId: 4
+          step: 1m
+      title: Threads
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: 'Aborted_clients: The number of connections that were aborted because
+      the client died without closing the connection properly. Aborted_connects: The
+      number of failed attempts to connect to the MySQL server.'
+      id: 22
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_aborted_connects[5m]) or irate(mysql_global_status_aborted_connects[5m])
+          legendFormat: Aborted Connects (attempts)
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_aborted_clients[5m]) or irate(mysql_global_status_aborted_clients[5m])
+          legendFormat: Aborted Clients (timeout)
+          refId: 2
+          step: 1m
+      title: Aborted Connections
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - id: 10
+      title: Queries and Questions
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: The number of statements executed by the server. This includes only
+        statements sent to the server by clients and not statements executed within
+        stored programs, unlike the Queries variable.
+      id: 13
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_questions[5m]) or irate(mysql_global_status_questions[5m])
+          legendFormat: Questions
+          refId: 1
+          step: 1m
+      title: Questions
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 18
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_select_full_join[5m]) or irate(mysql_global_status_select_full_join[5m])
+          legendFormat: Full Join
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_select_full_range_join[5m]) or irate(mysql_global_status_select_full_range_join[5m])
+          legendFormat: Full Range Join
+          refId: 2
+          step: 1m
+        - expr: rate(mysql_global_status_select_scan[5m]) or irate(mysql_global_status_select_scan[5m])
+          legendFormat: Scan
+          refId: 3
+          step: 1m
+        - expr: rate(mysql_global_status_select_range[5m]) or irate(mysql_global_status_select_range[5m])
+          legendFormat: Range
+          refId: 4
+          step: 1m
+        - expr: rate(mysql_global_status_select_range_check[5m]) or irate(mysql_global_status_select_range_check[5m])
+          legendFormat: Range Check
+          refId: 5
+          step: 1m
+      title: Select By Types
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 19
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_sort_rows[5m]) or irate(mysql_global_status_sort_rows[5m])
+          legendFormat: Rows
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_sort_range[5m]) or irate(mysql_global_status_sort_range[5m])
+          legendFormat: Range
+          refId: 2
+          step: 1m
+        - expr: rate(mysql_global_status_sort_merge_passes[5m]) or irate(mysql_global_status_sort_merge_passes[5m])
+          legendFormat: Merge Passes
+          refId: 3
+          step: 1m
+        - expr: rate(mysql_global_status_sort_scan[5m]) or irate(mysql_global_status_sort_scan[5m])
+          legendFormat: Scan
+          refId: 4
+          step: 1m
+      title: Sort By Types
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: The number of queries that have taken more than long_query_time seconds.
+        This counter increments regardless of whether the slow query log is enabled.
+      id: 20
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_slow_queries[5m]) or irate(mysql_global_status_slow_queries[5m])
+          legendFormat: Slow Queries
+          refId: 1
+          step: 1m
+      title: Slow Queries
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - id: 15
+      title: Temporary Objects
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 16
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_created_tmp_tables[5m]) or irate(mysql_global_status_created_tmp_tables[5m])
+          legendFormat: Created Tmp Tables
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_created_tmp_disk_tables[5m]) or irate(mysql_global_status_created_tmp_disk_tables[5m])
+          legendFormat: Created Tmp Disk Tables
+          refId: 2
+          step: 1m
+        - expr: rate(mysql_global_status_created_tmp_files[5m]) or irate(mysql_global_status_created_tmp_files[5m])
+          legendFormat: Created Tmp Files
+          refId: 3
+          step: 1m
+      title: Tmp Tables and Files
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - id: 23
+      title: Table Locks
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: 'The number of times that a request for a table lock could be granted
+      immediately, or could not be granted immediately and a wait was needed. '
+      id: 24
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_table_locks_immediate[5m]) or irate(mysql_global_status_table_locks_immediate[5m])
+          legendFormat: Table Locks Immediate
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_table_locks_waited[5m]) or irate(mysql_global_status_table_locks_waited[5m])
+          legendFormat: Table Locks Waited
+          refId: 2
+          step: 1m
+      title: Locks By Types
+      type: graph
+      yaxes:
+        - decimals: 2
+          format: none
+    - id: 25
+      title: Network Traffic
+      type: row
+    - bars: false
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: ""
+      id: 26
+      lines: true
+      stack: false
+      targets:
+        - expr: rate(mysql_global_status_bytes_received[5m]) or irate(mysql_global_status_bytes_received[5m])
+          legendFormat: Inbound
+          refId: 1
+          step: 1m
+        - expr: rate(mysql_global_status_bytes_sent[5m]) or irate(mysql_global_status_bytes_sent[5m])
+          legendFormat: Outbound
+          refId: 2
+          step: 1m
+      title: Inbound vs Outbound
+      type: graph
+      yaxes:
+        - decimals: 0
+          format: Byte/s
+  title: MySQL Overview

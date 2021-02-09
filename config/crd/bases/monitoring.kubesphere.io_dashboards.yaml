@@ -4,7 +4,11 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+<<<<<<< HEAD
     controller-gen.kubebuilder.io/version: v0.4.1
+=======
+    controller-gen.kubebuilder.io/version: v0.2.5
+>>>>>>> 66c05e0 (modifies crd resources)
   creationTimestamp: null
   name: dashboards.monitoring.kubesphere.io
 spec:
@@ -15,6 +19,7 @@ spec:
     plural: dashboards
     singular: dashboard
   scope: Namespaced
+<<<<<<< HEAD
   versions:
   - name: v1alpha1
     schema:
@@ -263,6 +268,226 @@ spec:
                   description: referers to https://pkg.go.dev/github.com/K-Phoen/grabana/decoder#DashboardVariable
                   properties:
                     const:
+=======
+  validation:
+    openAPIV3Schema:
+      description: Dashboard is the Schema for the dashboards API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: DashboardSpec defines the desired state of Dashboard
+          properties:
+            annotations:
+              description: Annotations Time range
+              items:
+                properties:
+                  datasource:
+                    type: string
+                  enable:
+                    type: boolean
+                  expr:
+                    type: string
+                  iconColor:
+                    type: string
+                  iconSize:
+                    type: integer
+                  lineColor:
+                    type: string
+                  name:
+                    type: string
+                  query:
+                    type: string
+                  showLine:
+                    type: boolean
+                  step:
+                    type: string
+                  tagKeys:
+                    type: string
+                  tags:
+                    items:
+                      type: string
+                    type: array
+                  tagsField:
+                    type: string
+                  textField:
+                    type: string
+                  textFormat:
+                    type: string
+                  titleFormat:
+                    type: string
+                  type:
+                    type: string
+                type: object
+              type: array
+            auto_refresh:
+              type: string
+            editable:
+              type: boolean
+            panels:
+              items:
+                description: Supported panel type
+                properties:
+                  bars:
+                    description: Display as a bar chart
+                    type: boolean
+                  color:
+                    description: color settings todo graph
+                    items:
+                      type: string
+                    type: array
+                  colors:
+                    description: Set series color
+                    items:
+                      type: string
+                    type: array
+                  datasource:
+                    description: datasource
+                    type: string
+                  decimals:
+                    description: Limit the decimal numbers
+                    format: int64
+                    type: integer
+                  description:
+                    description: Panel description
+                    type: string
+                  format:
+                    description: Display unit
+                    type: string
+                  gauge:
+                    description: gauge
+                    properties:
+                      maxValue:
+                        format: int64
+                        type: integer
+                      minValue:
+                        format: int64
+                        type: integer
+                      show:
+                        type: boolean
+                      thresholdLabels:
+                        type: boolean
+                      thresholdMarkers:
+                        type: boolean
+                    type: object
+                  height:
+                    description: height
+                    type: string
+                  hidden_columns:
+                    items:
+                      type: string
+                    type: array
+                  html:
+                    description: private properties of text panel
+                    type: string
+                  id:
+                    description: Panel ID
+                    format: int64
+                    type: integer
+                  legend:
+                    description: legend
+                    items:
+                      type: string
+                    type: array
+                  lines:
+                    description: Display as a line chart
+                    type: boolean
+                  markdown:
+                    type: string
+                  options:
+                    description: private property of the bargauge panel
+                    properties:
+                      colorMode:
+                        type: string
+                      content:
+                        type: string
+                      displayMode:
+                        type: string
+                      graphMode:
+                        type: string
+                      justifyMode:
+                        type: string
+                      mode:
+                        type: string
+                      orientation:
+                        type: string
+                      textMode:
+                        type: string
+                    type: object
+                  sparkline:
+                    description: 'private properties of singlestat panel spark line:
+                      full or bottom'
+                    type: string
+                  stack:
+                    description: Display as a stacked chart
+                    type: boolean
+                  targets:
+                    description: A collection of queries
+                    items:
+                      description: Query editor options Referers to https://pkg.go.dev/github.com/grafana-tools/sdk#Target
+                      properties:
+                        datasource:
+                          description: Set a datasource
+                          type: string
+                        expr:
+                          description: 'only support prometheus,and the corresponding
+                            fields are as follows: Input for fetching metrics.'
+                          type: string
+                        format:
+                          type: string
+                        hide:
+                          description: 'hide: bool'
+                          type: boolean
+                        instant:
+                          type: boolean
+                        interval:
+                          type: string
+                        intervalFactor:
+                          description: extra fields
+                          type: integer
+                        legendFormat:
+                          description: Legend format for outputs. You can make a dynamic
+                            legend with templating variables.
+                          type: string
+                        refId:
+                          description: common fields Reference ID
+                          format: int64
+                          type: integer
+                        step:
+                          description: Set series time interval
+                          type: string
+                      type: object
+                    type: array
+                  time_series_aggregations:
+                    items:
+                      type: string
+                    type: array
+                  title:
+                    description: '****common properties start Name pf the panel'
+                    type: string
+                  transparent:
+                    description: transparent
+                    type: boolean
+                  type:
+                    description: Must be `graph`
+                    type: string
+                  valueName:
+                    description: value name
+                    type: string
+                  yaxes:
+                    description: private property of graph panel Y-axis options
+                    items:
+>>>>>>> 66c05e0 (modifies crd resources)
                       properties:
                         default:
                           type: string
@@ -270,6 +495,7 @@ spec:
                           type: string
                         name:
                           type: string
+<<<<<<< HEAD
                         values_map:
                           additionalProperties:
                             type: string
@@ -360,6 +586,126 @@ spec:
                 type: string
             type: object
         type: object
+=======
+                      required:
+                      - decimals
+                      type: object
+                    type: array
+                type: object
+              type: array
+            shared_crosshair:
+              type: boolean
+            tags:
+              items:
+                type: string
+              type: array
+            templatings:
+              description: // Templating variables
+              items:
+                description: referers to https://pkg.go.dev/github.com/K-Phoen/grabana/decoder#DashboardVariable
+                properties:
+                  const:
+                    properties:
+                      default:
+                        type: string
+                      label:
+                        type: string
+                      name:
+                        type: string
+                      values_map:
+                        additionalProperties:
+                          type: string
+                        type: object
+                    type: object
+                  custom:
+                    properties:
+                      all_value:
+                        type: string
+                      default:
+                        type: string
+                      include_all:
+                        type: boolean
+                      label:
+                        type: string
+                      name:
+                        type: string
+                      values_map:
+                        additionalProperties:
+                          type: string
+                        type: object
+                    type: object
+                  datasource:
+                    properties:
+                      include_all:
+                        type: boolean
+                      label:
+                        type: string
+                      name:
+                        type: string
+                      regex:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  interval:
+                    properties:
+                      default:
+                        type: string
+                      label:
+                        type: string
+                      name:
+                        type: string
+                      values:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  query:
+                    properties:
+                      all_value:
+                        type: string
+                      datasource:
+                        type: string
+                      default_all:
+                        type: boolean
+                      include_all:
+                        type: boolean
+                      label:
+                        type: string
+                      name:
+                        type: string
+                      regex:
+                        type: string
+                      request:
+                        type: string
+                    type: object
+                type: object
+              type: array
+            time:
+              description: Time ranges of the metrics for display
+              properties:
+                from:
+                  description: Start time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
+                    eg. `now-1M`. It denotes the end time is set to the last month
+                    since now.
+                  type: string
+                to:
+                  description: End time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
+                    eg. `now-1M`. It denotes the start time is set to the last month
+                    since now.
+                  type: string
+              type: object
+            timezone:
+              type: string
+            title:
+              description: common fields
+              type: string
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+>>>>>>> 66c05e0 (modifies crd resources)
     served: true
     storage: true
 status:

@@ -1,0 +1,17 @@
+
+# Prometheus Monitor Service (Metrics)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: elasticsearch
+  name: kubesphere-logging-es
+  namespace: kubesphere-logging-system
+spec:
+  endpoints:
+  - port: 9200
+    targetPort: http
+    interval: 30s
+  selector:
+    matchLabels:
+      app: elasticsearch

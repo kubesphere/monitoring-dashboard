@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elasticsearch
+  name: kubesphere-logging-es
+  namespace: kubesphere-logging-system
+spec:
+  ports:
+  - name: http-metrics
+    port: 9201
+    protocol: TCP
+    targetPort: 9201
+  selector:
+    app: elasticsearch

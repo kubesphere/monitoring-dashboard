@@ -3,13 +3,11 @@
 package panels
 
 // Query editor options
-type Target struct {
-	// Input for fetching metrics.
-	Expression string `json:"expr,omitempty"`
-	// Legend format for outputs. You can make a dynamic legend with templating variables.
-	LegendFormat string `json:"legendFormat,omitempty"`
-	// Reference ID
-	RefID int64 `json:"refId,omitempty"`
-	// Set series time interval
-	Step string `json:"step,omitempty"`
+type CommonPanel struct {
+	// Name of the  panel
+	Title string `json:"title,omitempty" yaml:"title,omitempty"`
+	// Type of the  panel
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Panel ID
+	Id int64 `json:"id,omitempty" yaml:"id,omitempty"`
 }

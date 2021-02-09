@@ -41,31 +41,30 @@ func TestDashboardSpecSerde(t *testing.T) {
 	var expected = DashboardSpec{
 		Title:      "MySQL Overview",
 		DataSource: "prometheus",
-		Panels: []Panel{{
-			PanelMeta: PanelMeta{
+		Panels: []panels.Panel{
+			{
 				Id:    1,
 				Type:  "singlestat",
 				Title: "Current QPS",
+				Targets: []panels.Target{{
+					Expression: "vector(1)",
+				}},
 			},
-			Targets: []panels.Target{{
-				Expression: "vector(1)",
-			}},
-		}, {
-			PanelMeta: PanelMeta{
+			{
+
 				Id:    2,
 				Title: "Connections and Threads",
 				Type:  "row",
 			},
-		}, {
-			PanelMeta: PanelMeta{
+			{
+
 				Id:    3,
 				Title: "Connections",
 				Type:  "graph",
-			},
-			Targets: []panels.Target{{
-				Expression: "vector(1)",
+				Targets: []panels.Target{{
+					Expression: "vector(1)",
+				}},
 			}},
-		}},
 	}
 
 	var actual DashboardSpec

@@ -36,67 +36,181 @@ spec:
           spec:
             description: DashboardSpec defines the desired state of Dashboard
             properties:
-              datasource:
-                description: Dashboard datasource
-                type: string
-              description:
-                description: Dashboard description
-                type: string
-              panels:
-                description: Collection of panels. Panel is one of [Row](row.md),
-                  [Singlestat](#singlestat.md) or [Graph](graph.md)
+              annotations:
+                description: Annotations
                 items:
-                  description: Supported panel
+                  properties:
+                    datasource:
+                      type: string
+                    enable:
+                      type: boolean
+                    expr:
+                      type: string
+                    iconColor:
+                      type: string
+                    iconSize:
+                      type: integer
+                    lineColor:
+                      type: string
+                    name:
+                      type: string
+                    query:
+                      type: string
+                    showLine:
+                      type: boolean
+                    step:
+                      type: string
+                    tagKeys:
+                      type: string
+                    tags:
+                      items:
+                        type: string
+                      type: array
+                    tagsField:
+                      type: string
+                    textField:
+                      type: string
+                    textFormat:
+                      type: string
+                    titleFormat:
+                      type: string
+                    type:
+                      type: string
+                  type: object
+                type: array
+              auto_refresh:
+                type: string
+              dataSource:
+                type: string
+              editable:
+                type: boolean
+              panels:
+                items:
+                  description: Supported panel type
                   properties:
                     bars:
-                      description: A collection of queries Targets []Target `json:"targets,omitempty"`
-                        Display as a bar chart
+                      description: Display as a bar chart
                       type: boolean
+                    color:
+                      description: color settings todo graph
+                      items:
+                        type: string
+                      type: array
                     colors:
                       description: Set series color
                       items:
                         type: string
                       type: array
+                    datasource:
+                      description: datasource
+                      type: string
                     decimals:
-                      description: Name of the signlestat panel Title string `json:"title,omitempty"`
-                        Must be `singlestat` Type string `json:"type"` Panel ID Id
-                        int64 `json:"id,omitempty"` A collection of queries Targets
-                        []Target `json:"targets,omitempty"` Limit the decimal numbers
+                      description: Limit the decimal numbers
                       format: int64
                       type: integer
                     description:
-                      description: Name of the graph panel Title string `json:"title,omitempty"`
-                        Must be `graph` Type string `json:"type"` Panel ID Id int64
-                        `json:"id,omitempty"` Panel description
+                      description: Panel description
                       type: string
                     format:
                       description: Display unit
+                      type: string
+                    gauge:
+                      description: gauge
+                      properties:
+                        maxValue:
+                          format: int64
+                          type: integer
+                        minValue:
+                          format: int64
+                          type: integer
+                        show:
+                          type: boolean
+                        thresholdLabels:
+                          type: boolean
+                        thresholdMarkers:
+                          type: boolean
+                      type: object
+                    height:
+                      description: height
+                      type: string
+                    hidden_columns:
+                      items:
+                        type: string
+                      type: array
+                    html:
+                      description: private properties of text panel
                       type: string
                     id:
                       description: Panel ID
                       format: int64
                       type: integer
+                    legend:
+                      description: legend
+                      items:
+                        type: string
+                      type: array
                     lines:
                       description: Display as a line chart
                       type: boolean
+                    markdown:
+                      type: string
+                    options:
+                      description: private property of the bargauge panel
+                      properties:
+                        colorMode:
+                          type: string
+                        content:
+                          type: string
+                        displayMode:
+                          type: string
+                        graphMode:
+                          type: string
+                        justifyMode:
+                          type: string
+                        mode:
+                          type: string
+                        orientation:
+                          type: string
+                        textMode:
+                          type: string
+                      type: object
+                    sparkline:
+                      description: 'private properties of singlestat panel spark line:
+                        full or bottom'
+                      type: string
                     stack:
                       description: Display as a stacked chart
                       type: boolean
                     targets:
-                      description: A collection of queries Only for panels with `graph`
-                        or `singlestat` type
+                      description: A collection of queries
                       items:
-                        description: Query editor options
+                        description: Query editor options Referers to https://pkg.go.dev/github.com/grafana-tools/sdk#Target
                         properties:
-                          expr:
-                            description: Input for fetching metrics.
+                          datasource:
+                            description: Set a datasource
                             type: string
+                          expr:
+                            description: 'only support prometheus,and the corresponding
+                              fields are as follows: Input for fetching metrics.'
+                            type: string
+                          format:
+                            type: string
+                          hide:
+                            description: 'hide: bool'
+                            type: boolean
+                          instant:
+                            type: boolean
+                          interval:
+                            type: string
+                          intervalFactor:
+                            description: extra fields
+                            type: integer
                           legendFormat:
                             description: Legend format for outputs. You can make a
                               dynamic legend with templating variables.
                             type: string
                           refId:
-                            description: Reference ID
+                            description: common fields Reference ID
                             format: int64
                             type: integer
                           step:
@@ -104,14 +218,24 @@ spec:
                             type: string
                         type: object
                       type: array
+                    time_series_aggregations:
+                      items:
+                        type: string
+                      type: array
                     title:
-                      description: Name of the panel
+                      description: '****common properties start Name pf the panel'
                       type: string
+                    transparent:
+                      description: transparent
+                      type: boolean
                     type:
-                      description: Panel Type, one of `row`, `graph`, `singlestat`
+                      description: Must be `graph`
+                      type: string
+                    valueName:
+                      description: value name
                       type: string
                     yaxes:
-                      description: Y-axis options
+                      description: private property of graph panel Y-axis options
                       items:
                         properties:
                           decimals:
@@ -121,29 +245,102 @@ spec:
                           format:
                             description: Display unit
                             type: string
+                        required:
+                        - decimals
                         type: object
                       type: array
-                  required:
-                  - type
                   type: object
                 type: array
-              templating:
-                description: Templating variables
+              shared_crosshair:
+                type: boolean
+              tags:
                 items:
-                  description: Templating defines a variable, which can be used as
-                    a placeholder in query
+                  type: string
+                type: array
+              templatings:
+                description: // Templating variables
+                items:
+                  description: referers to https://pkg.go.dev/github.com/K-Phoen/grabana/decoder#DashboardVariable
                   properties:
-                    name:
-                      description: Variable name
-                      type: string
+                    const:
+                      properties:
+                        default:
+                          type: string
+                        label:
+                          type: string
+                        name:
+                          type: string
+                        values_map:
+                          additionalProperties:
+                            type: string
+                          type: object
+                      type: object
+                    custom:
+                      properties:
+                        all_value:
+                          type: string
+                        default:
+                          type: string
+                        include_all:
+                          type: boolean
+                        label:
+                          type: string
+                        name:
+                          type: string
+                        values_map:
+                          additionalProperties:
+                            type: string
+                          type: object
+                      type: object
+                    datasource:
+                      properties:
+                        include_all:
+                          type: boolean
+                        label:
+                          type: string
+                        name:
+                          type: string
+                        regex:
+                          type: string
+                        type:
+                          type: string
+                      type: object
+                    interval:
+                      properties:
+                        default:
+                          type: string
+                        label:
+                          type: string
+                        name:
+                          type: string
+                        values:
+                          items:
+                            type: string
+                          type: array
+                      type: object
                     query:
-                      description: Set variable values to be the return result of
-                        the query
-                      type: string
+                      properties:
+                        all_value:
+                          type: string
+                        datasource:
+                          type: string
+                        default_all:
+                          type: boolean
+                        include_all:
+                          type: boolean
+                        label:
+                          type: string
+                        name:
+                          type: string
+                        regex:
+                          type: string
+                        request:
+                          type: string
+                      type: object
                   type: object
                 type: array
               time:
-                description: Time range for display
+                description: Time range
                 properties:
                   from:
                     description: Start time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
@@ -156,8 +353,10 @@ spec:
                       since now.
                     type: string
                 type: object
+              timezone:
+                type: string
               title:
-                description: Dashboard title
+                description: common fields
                 type: string
             type: object
         type: object

@@ -3,7 +3,7 @@
 apiVersion: monitoring.kubesphere.io/v1alpha1
 kind: ClusterDashboard
 metadata:
-  name: nvidia-dcgm-exporter-dashboard-rev1
+  name: nvidia-dcgm-exporter-clusterdashboard-rev1
 spec:
   title: NVIDIA DCGM Exporter Dashboard
   # editable: true

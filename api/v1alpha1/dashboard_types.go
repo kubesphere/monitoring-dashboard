@@ -1,7 +1,7 @@
 /*
 Copyright 2020 The KubeSphere authors.
 
-Licensed under the Apache License, Version 2.0 (the "License");
+Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
@@ -16,96 +16,54 @@ limitations under the License.
 
 package v1alpha1
 
+// todo
+// add Gauge 仪表盘
+
 import (
+	ants "kubesphere.io/monitoring-dashboard/api/v1alpha1/annotations"
+	panels "kubesphere.io/monitoring-dashboard/api/v1alpha1/panels"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubesphere.io/monitoring-dashboard/api/v1alpha1/panels"
+	templatings "kubesphere.io/monitoring-dashboard/api/v1alpha1/templatings"
+	time "kubesphere.io/monitoring-dashboard/api/v1alpha1/time"
 )
 
 // DashboardSpec defines the desired state of Dashboard
 type DashboardSpec struct {
-	// Dashboard title
-	Title string `json:"title,omitempty"`
-	// Dashboard description
-	Description string `json:"description,omitempty"`
-	// Dashboard datasource
-	DataSource string `json:"datasource,omitempty"`
-	// Time range for display
-	Time Time `json:"time,omitempty"`
-	// Collection of panels. Panel is one of [Row](row.md), [Singlestat](#singlestat.md) or [Graph](graph.md)
-	Panels []Panel `json:"panels,omitempty"`
-	// Templating variables
-	Templatings []Templating `json:"templating,omitempty"`
-}
-
-// Time ranges of the metrics for display
-type Time struct {
-	// Start time in the format of `^now([+-][0-9]+[smhdwMy])?$`, eg. `now-1M`.
-	// It denotes the end time is set to the last month since now.
-	From string `json:"from,omitempty"`
-	// End time in the format of `^now([+-][0-9]+[smhdwMy])?$`, eg. `now-1M`.
-	// It denotes the start time is set to the last month since now.
-	To string `json:"to,omitempty"`
-}
-
-// Supported panel
-type Panel struct {
-	// panel metadata
-	PanelMeta `json:",inline"`
-
-	// A collection of queries
-	// Only for panels with `graph` or `singlestat` type
-	Targets []panels.Target `json:"targets,omitempty"`
-
-	// The panel row
-	Row *panels.Row `json:",inline"`
-	// The panel graph
-	Graph *panels.Graph `json:",inline"`
-	// The panel singlestat
-	SingleStat *panels.SingleStat `json:",inline"`
-}
-
-type PanelType string
-
-const (
-	PanelRow        PanelType = "row"
-	PanelGraph      PanelType = "graph"
-	PanelSingleStat PanelType = "singlestat"
-)
-
-type PanelMeta struct {
-	// Name of the panel
-	Title string `json:"title,omitempty"`
-	// Panel ID
-	Id int64 `json:"id,omitempty"`
-	// Panel Type, one of `row`, `graph`, `singlestat`
-	Type PanelType `json:"type"`
-}
-
-// Templating defines a variable, which can be used as a placeholder in query
-type Templating struct {
-	// Variable name
-	Name string `json:"name,omitempty"`
-	// Set variable values to be the return result of the query
-	Query string `json:"query,omitempty"`
+	//common fields
+	Title           string   `json:"title,omitempty" yaml:"title,omitempty"`
+	DataSource      string   `json:"dataSource,omitempty" yaml:"dataSource,omitempty"`
+	Editable        bool     `json:"editable,omitempty" yaml:"editable,omitempty"`
+	SharedCrosshair bool     `json:"shared_crosshair,omitempty" yaml:"shared_crosshair,omitempty"`
+	Tags            []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	AutoRefresh     string   `json:"auto_refresh,omitempty" yaml:"auto_refresh,omitempty"`
+	Timezone        string   `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+	// Annotations
+	Annotations []ants.Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty"`
+	// Time range
+	Time   time.Time      `json:"time,omitempty" yaml:"time,omitempty"`
+	Panels []panels.Panel `json:"panels,omitempty" yaml:"panels,omitempty"`
+	// // Templating variables
+	Templatings []templatings.Templatings `json:"templatings,omitempty" yaml:"templatings,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // Dashboard is the Schema for the dashboards API
 type Dashboard struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.TypeMeta   `json:",inline" yaml:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
-	Spec DashboardSpec `json:"spec,omitempty"`
+	Spec DashboardSpec `json:"spec,omitempty" yaml:"spec,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // DashboardList contains a list of Dashboard
 type DashboardList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Dashboard `json:"items"`
+	metav1.TypeMeta `json:",inline" yaml:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Items           []Dashboard `json:"items" yaml:"items"`
 }
 
 // +kubebuilder:object:root=true
@@ -113,19 +71,19 @@ type DashboardList struct {
 
 // ClusterDashboard is the Schema for the culsterdashboards API
 type ClusterDashboard struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.TypeMeta   `json:",inline" yaml:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
-	Spec DashboardSpec `json:"spec,omitempty"`
+	Spec DashboardSpec `json:"spec,omitempty" yaml:"spec,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // ClusterDashboardList contains a list of ClusterDashboard
 type ClusterDashboardList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []ClusterDashboard `json:"items"`
+	metav1.TypeMeta `json:",inline" yaml:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Items           []ClusterDashboard `json:"items" yaml:"items"`
 }
 
 func init() {

@@ -158,6 +158,33 @@ Time range specifies current dashboard time for display. The following are examp
 |--|--|
 |label_values(metric, label)|Returns a list of label values for the label in the specified metric.|
 
+## converter
+
+we support a converter tool which can be used for importing dashboards from Grafana dashboard templates.
+
+### how to use
+if we want to convert a dashboard json template to a k8s manifest, you can use make cmdline like this below:
+```
+	make converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT)
+```
+or:
+```
+	go run ./cmd/converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT) -name=$(Name)
+```
+### Usage of converter
+```
+Usage of converter:
+  -inputPath string
+        a input path for the converter to look for jobs (default "./manifests/inputs")
+  -isClusterCrd
+        a flag that defines whether build the cluster dashboard resource or not
+  -name string
+        name of the dashboard resource (default "your file name")
+  -namespace string
+        namespace of the dashboard resource (default "default")
+  -outputPath string
+        a output path for the converter to store manifests (default "./manifests/outputs")
+```
 ## Development
 
 ### APIs

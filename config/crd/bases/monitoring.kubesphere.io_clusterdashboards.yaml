@@ -377,82 +377,41 @@ spec:
             templatings:
               description: // Templating variables
               items:
-                description: referers to https://pkg.go.dev/github.com/K-Phoen/grabana/decoder#DashboardVariable
+                description: TemplateVar combines above types to one struct
                 properties:
-                  const:
-                    properties:
-                      default:
-                        type: string
-                      label:
-                        type: string
-                      name:
-                        type: string
-                      values_map:
-                        additionalProperties:
-                          type: string
-                        type: object
-                    type: object
-                  custom:
-                    properties:
-                      all_value:
-                        type: string
-                      default:
-                        type: string
-                      include_all:
-                        type: boolean
-                      label:
-                        type: string
-                      name:
-                        type: string
-                      values_map:
-                        additionalProperties:
-                          type: string
-                        type: object
-                    type: object
+                  all_value:
+                    type: string
                   datasource:
-                    properties:
-                      include_all:
-                        type: boolean
-                      label:
-                        type: string
-                      name:
-                        type: string
-                      regex:
-                        type: string
-                      type:
-                        type: string
-                    type: object
-                  interval:
-                    properties:
-                      default:
-                        type: string
-                      label:
-                        type: string
-                      name:
-                        type: string
-                      values:
-                        items:
-                          type: string
-                        type: array
-                    type: object
+                    description: from type VariableQuery
+                    type: string
+                  default:
+                    type: string
+                  default_all:
+                    type: boolean
+                  include_all:
+                    type: boolean
+                  label:
+                    type: string
+                  name:
+                    description: common properties, more than one containing
+                    type: string
                   query:
-                    properties:
-                      all_value:
-                        type: string
-                      datasource:
-                        type: string
-                      default_all:
-                        type: boolean
-                      include_all:
-                        type: boolean
-                      label:
-                        type: string
-                      name:
-                        type: string
-                      regex:
-                        type: string
-                      request:
-                        type: string
+                    description: from type VariableDatasource
+                    type: string
+                  regex:
+                    type: string
+                  request:
+                    type: string
+                  type:
+                    type: string
+                  values:
+                    description: from type VariableInterval
+                    items:
+                      type: string
+                    type: array
+                  values_map:
+                    additionalProperties:
+                      type: string
                     type: object
                 type: object
               type: array

@@ -2,7 +2,7 @@ apiVersion: monitoring.kubesphere.io/v1alpha1
 kind: Dashboard
 metadata:
   name: nvidia-dcgm-exporter-dashboard-rev1
-  namespace: gpu-operator-resources
+  namespace: default
 spec:
   title: NVIDIA DCGM Exporter Dashboard
   editable: true
@@ -130,7 +130,7 @@ spec:
     - decimals: 3
       format: none
   templatings:
-  - query:
-      name: gpu
-      datasource: ${DS_PROMETHEUS}
-      request: label_values(gpu)
+  - name: gpu
+    type: query
+    datasource: ${DS_PROMETHEUS}
+    request: label_values(gpu)

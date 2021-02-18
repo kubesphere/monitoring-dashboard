@@ -19,11 +19,11 @@ import (
 type Transfer struct {
 	// target paths that the converter takes jobs to transfer
 	TargetPaths []string
-	// a inner useful json-file paths to parse
+	// inner useful json filepaths to parse
 	Paths []string
-	// default: "json"
-	EndSuffix string // a suffix string for json path
-	// a dir path for target manifests
+	// default: "json";  a suffix string for json path
+	EndSuffix string
+	// output path for target manifests
 	OutputPath string
 }
 
@@ -42,9 +42,12 @@ func init() {
 	flag.StringVar(&name, "name", "", "name of the dashboard resource")
 }
 
-//main function
+// main function
 func main() {
+	// parse the params
 	flag.Parse()
+
+	// init a transfer struct
 	transfer := Transfer{
 		TargetPaths: []string{inputPath},
 		Paths:       make([]string, 0),
@@ -52,21 +55,26 @@ func main() {
 		OutputPath:  outputPath,
 	}
 
+	// fills with a logger
 	logger, err := createLogger()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not create logger: %s", err)
 		os.Exit(1)
 	}
 
+	// finds json files from the given input path
 	for _, jsonPath := range transfer.TargetPaths {
 		transfer.FindJson(jsonPath)
 	}
 
+	// exits if it could not get a json file
 	if len(transfer.Paths) == 0 {
 		fmt.Fprintf(os.Stderr, "Could not get a json file: %s\n", err)
 		os.Exit(1)
 	}
 
+	// sets a gr for each json file
+	// once compeleted, each manifest will fill in the target path
 	var wg sync.WaitGroup
 
 	for _, fi := range transfer.Paths {
@@ -132,7 +140,7 @@ func (t *Transfer) FindJson(dirPath string) error {
 	}
 
 	pthSep := string(os.PathSeparator)
-
+	// recursive algorithm
 	for _, f := range dir {
 		name := f.Name()
 		fString := strings.Join([]string{dirPath, name}, pthSep)
@@ -166,9 +174,9 @@ func (t *Transfer) TransferToMainfest(inputFile string, logger *zap.Logger, isCl
 		ns = "default"
 	}
 
-	if isClusterCrd {
-		prevFileName = prevFileName + "-cluster"
-	}
+	// if isClusterCrd {
+	// 	prevFileName = prevFileName + "-cluster"
+	// }
 
 	// inner name
 	if name == "" {

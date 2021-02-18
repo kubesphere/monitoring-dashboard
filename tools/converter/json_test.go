@@ -121,11 +121,12 @@ func TestConvertIntervalVar(t *testing.T) {
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
 
 	req.Len(dashboard.Templatings, 1)
-	req.NotNil(dashboard.Templatings[0].Interval)
+	req.NotNil(dashboard.Templatings[0])
 
-	interval := dashboard.Templatings[0].Interval
+	interval := dashboard.Templatings[0]
 
 	req.Equal("var_interval", interval.Name)
+	req.Equal("interval", interval.Type)
 	req.Equal("Label interval", interval.Label)
 	req.Equal("30s", interval.Default)
 	req.ElementsMatch([]string{"10s", "30s", "1m"}, interval.Values)
@@ -150,10 +151,11 @@ func TestConvertCustomVar(t *testing.T) {
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
 
 	req.Len(dashboard.Templatings, 1)
-	req.NotNil(dashboard.Templatings[0].Custom)
+	req.NotNil(dashboard.Templatings[0])
 
-	custom := dashboard.Templatings[0].Custom
+	custom := dashboard.Templatings[0]
 
+	req.Equal("custom", custom.Type)
 	req.Equal("var_custom", custom.Name)
 	req.Equal("Label custom", custom.Label)
 	req.Equal("85", custom.Default)
@@ -182,11 +184,12 @@ func TestConvertConstVar(t *testing.T) {
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
 
 	req.Len(dashboard.Templatings, 1)
-	req.NotNil(dashboard.Templatings[0].Const)
+	req.NotNil(dashboard.Templatings[0])
 
-	constant := dashboard.Templatings[0].Const
+	constant := dashboard.Templatings[0]
 
 	req.Equal("var_const", constant.Name)
+	req.Equal("const", constant.Type)
 	req.Equal("Label const", constant.Label)
 	req.Equal("85th", constant.Default)
 	req.True(reflect.DeepEqual(constant.ValuesMap, map[string]string{
@@ -213,11 +216,12 @@ func TestConvertQueryVar(t *testing.T) {
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
 
 	req.Len(dashboard.Templatings, 1)
-	req.NotNil(dashboard.Templatings[0].Query)
+	req.NotNil(dashboard.Templatings[0])
 
-	query := dashboard.Templatings[0].Query
+	query := dashboard.Templatings[0]
 
 	req.Equal("var_query", query.Name)
+	req.Equal("query", query.Type)
 	req.Equal("Query", query.Label)
 	req.Equal(datasource, query.Datasource)
 	req.Equal("prom_query", query.Request)
@@ -245,7 +249,7 @@ func TestConvertTargetWithPrometheusTarget(t *testing.T) {
 		RefID:        "A",
 	}
 
-	convertedTarget := converter.convertTarget(target, false, 0)
+	convertedTarget := converter.convertTarget(target, false, 0, "")
 
 	req.NotNil(convertedTarget)
 	req.Equal("prometheus_query", convertedTarget.Expression)
@@ -475,9 +479,9 @@ func TestTransferExpr(t *testing.T) {
 		"sum (elasticsearch_jvm_memory_used_bytes{cluster=\"$cluster\",name=~\"$name\"}) / sum (elasticsearch_jvm_memory_max_bytes{cluster=\"$cluster\",name=~\"$name\"}) * 100",
 		"elasticsearch_cluster_health_number_of_pending_tasks{cluster=\"$cluster\"}",
 	}
-	newExpr := transferExpr(testCase[0], false)
+	newExpr := transferExpr(testCase[0], false, "")
 	req.Equal(newExpr, "sum by(cluster,name)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster,name)  (elasticsearch_jvm_memory_max_bytes) * 100")
-	newExpr2 := transferExpr(testCase[1], false)
+	newExpr2 := transferExpr(testCase[1], false, "")
 	req.Equal(newExpr2, "elasticsearch_cluster_health_number_of_pending_tasks")
 }
 

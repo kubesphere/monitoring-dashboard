@@ -93,7 +93,7 @@ spec:
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
-      expr: sum by(cluster,name)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster,name)  (elasticsearch_jvm_memory_max_bytes)
+      expr: sum by(cluster)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster)  (elasticsearch_jvm_memory_max_bytes)
         * 100
       step: 1m
       intervalFactor: 2
@@ -183,7 +183,7 @@ spec:
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
-      expr: sum by(cluster,name)  (elasticsearch_process_open_files_count)
+      expr: sum by(cluster)  (elasticsearch_process_open_files_count)
       step: 1m
       intervalFactor: 2
       instant: true
@@ -1439,24 +1439,24 @@ spec:
     - decimals: 3
       format: Byte
   templatings:
-  - interval:
-      name: interval
-      label: Interval
-      default: $__auto_interval
-      values: [$__auto_interval, 5m, 10m, 30m, 1h, 6h, 12h, 1d, 7d, 14d, 30d]
-  - query:
-      name: cluster
-      label: Сluster
-      datasource: ${DS_PROMETHEUS}
-      request: label_values(elasticsearch_indices_docs,cluster)
-  - query:
-      name: name
-      label: Node name
-      datasource: ${DS_PROMETHEUS}
-      request: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},name)
-      include_all: true
-  - query:
-      name: instance
-      label: Source of metrics
-      datasource: ${DS_PROMETHEUS}
-      request: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},instance)
+  - name: interval
+    type: interval
+    label: Interval
+    default: $__auto_interval
+    values: [$__auto_interval, 5m, 10m, 30m, 1h, 6h, 12h, 1d, 7d, 14d, 30d]
+  - name: cluster
+    type: query
+    label: Сluster
+    datasource: ${DS_PROMETHEUS}
+    request: label_values(elasticsearch_indices_docs,cluster)
+  - name: name
+    type: query
+    label: Node name
+    include_all: true
+    datasource: ${DS_PROMETHEUS}
+    request: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},name)
+  - name: instance
+    type: query
+    label: Source of metrics
+    datasource: ${DS_PROMETHEUS}
+    request: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},instance)

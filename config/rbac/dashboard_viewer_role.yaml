@@ -8,6 +8,7 @@ rules:
   - monitoring.kubesphere.io
   resources:
   - dashboards
+  - clusterdashboards
   verbs:
   - get
   - list
@@ -16,5 +17,6 @@ rules:
   - monitoring.kubesphere.io
   resources:
   - dashboards/status
+  - clusterdashboards/status
   verbs:
   - get

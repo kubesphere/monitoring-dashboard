@@ -168,7 +168,7 @@ func (in *DashboardSpec) DeepCopyInto(out *DashboardSpec) {
 	}
 	if in.Templatings != nil {
 		in, out := &in.Templatings, &out.Templatings
-		*out = make([]templatings.Templatings, len(*in))
+		*out = make([]templatings.TemplateVar, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}

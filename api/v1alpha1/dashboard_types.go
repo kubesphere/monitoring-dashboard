@@ -44,7 +44,7 @@ type DashboardSpec struct {
 	Time   time.Time      `json:"time,omitempty" yaml:"time,omitempty"`
 	Panels []panels.Panel `json:"panels,omitempty" yaml:"panels,omitempty"`
 	// // Templating variables
-	Templatings []templatings.Templatings `json:"templatings,omitempty" yaml:"templatings,omitempty"`
+	Templatings []templatings.TemplateVar `json:"templatings,omitempty" yaml:"templatings,omitempty"`
 }
 
 // +kubebuilder:object:root=true

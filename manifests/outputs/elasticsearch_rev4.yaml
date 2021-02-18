@@ -114,6 +114,7 @@ spec:
   - title: Nodes
     type: singlestat
     id: 10
+    description: Number of nodes in the cluster
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -135,6 +136,7 @@ spec:
   - title: Data nodes
     type: singlestat
     id: 9
+    description: Number of data nodes in the cluster
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -156,6 +158,7 @@ spec:
   - title: Pending tasks
     type: singlestat
     id: 16
+    description: Cluster level changes which have not yet been executed
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -201,6 +204,8 @@ spec:
   - title: Active primary shards
     type: singlestat
     id: 11
+    description: The number of primary shards in your cluster. This is an aggregate
+      total across all indices.
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -223,6 +228,8 @@ spec:
   - title: Active shards
     type: singlestat
     id: 39
+    description: Aggregate total of all shards across all indices, which includes
+      replica shards
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -245,6 +252,7 @@ spec:
   - title: Initializing shards
     type: singlestat
     id: 40
+    description: Count of shards that are being freshly created
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -267,6 +275,8 @@ spec:
   - title: Relocating shards
     type: singlestat
     id: 41
+    description: The number of shards that are currently moving from one node to another
+      node.
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -289,6 +299,7 @@ spec:
   - title: Delayed shards
     type: singlestat
     id: 42
+    description: Shards delayed to reduce reallocation overhead
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -311,6 +322,8 @@ spec:
   - title: Unassigned shards
     type: singlestat
     id: 82
+    description: The number of shards that exist in the cluster state, but cannot
+      be found in the cluster itself
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
@@ -612,6 +625,7 @@ spec:
   - title: Documents deleted rate
     type: graph
     id: 25
+    description: Count of deleted documents on this node
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1

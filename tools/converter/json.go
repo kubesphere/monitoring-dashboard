@@ -361,14 +361,15 @@ func (converter *JSON) convertGraph(panel sdk.Panel, isClusterCrd bool) panelsMo
 		decimals = int64(*panel.GraphPanel.Decimals)
 	}
 	graph := &panelsModel.Panel{
-		Title:    panel.Title,
-		Type:     panel.Type,
-		Decimals: decimals,
-		Id:       panelSpan(panel),
-		Bars:     panel.GraphPanel.Bars,
-		Lines:    panel.GraphPanel.Lines,
-		Stack:    panel.GraphPanel.Stack,
-		Legend:   converter.convertLegend(panel.GraphPanel.Legend),
+		Title:       panel.Title,
+		Type:        panel.Type,
+		Decimals:    decimals,
+		Description: panelDescription(panel.CommonPanel.Description),
+		Id:          panelSpan(panel),
+		Bars:        panel.GraphPanel.Bars,
+		Lines:       panel.GraphPanel.Lines,
+		Stack:       panel.GraphPanel.Stack,
+		Legend:      converter.convertLegend(panel.GraphPanel.Legend),
 	}
 
 	if panel.Height != nil {
@@ -450,13 +451,13 @@ func (converter *JSON) convertLegend(sdkLegend sdk.Legend) []string {
 // singlestat panel
 func (converter *JSON) convertSingleStat(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
 	singleStat := &panelsModel.Panel{
-		Title: panel.Title,
-		Id:    panelSpan(panel),
-		Type:  panel.Type,
-
-		Format:    panel.SinglestatPanel.Format,
-		Decimals:  int64(panel.SinglestatPanel.Decimals),
-		ValueName: panel.SinglestatPanel.ValueName,
+		Title:       panel.Title,
+		Id:          panelSpan(panel),
+		Type:        panel.Type,
+		Description: panelDescription(panel.CommonPanel.Description),
+		Format:      panel.SinglestatPanel.Format,
+		Decimals:    int64(panel.SinglestatPanel.Decimals),
+		ValueName:   panel.SinglestatPanel.ValueName,
 	}
 
 	if panel.Height != nil {
@@ -527,8 +528,9 @@ func (converter *JSON) convertCustom(panel sdk.Panel, isClusterCrd bool) panelsM
 		Decimals: 0,
 		Title:    panel.Title,
 		// Type:     panel.Type,
-		Type: "singlestat",
-		Id:   panelSpan(panel),
+		Type:        "singlestat",
+		Description: panelDescription(panel.CommonPanel.Description),
+		Id:          panelSpan(panel),
 	}
 
 	// handles targets
@@ -565,11 +567,11 @@ func (converter *JSON) convertBarGauge(panel sdk.Panel, isClusterCrd bool) panel
 			Content:     panel.BarGaugePanel.Options.Content,
 			Mode:        panel.BarGaugePanel.Options.Mode,
 		},
-		Decimals: 0,
-		Title:    panel.Title,
-		Type:     panel.Type,
-
-		Id: panelSpan(panel),
+		Decimals:    0,
+		Title:       panel.Title,
+		Type:        panel.Type,
+		Description: panelDescription(panel.CommonPanel.Description),
+		Id:          panelSpan(panel),
 	}
 
 	// handles targets
@@ -591,10 +593,10 @@ func (converter *JSON) convertBarGauge(panel sdk.Panel, isClusterCrd bool) panel
 // converts a table panel
 func (converter *JSON) convertTable(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
 	tablePanel := &panelsModel.Panel{
-		Title: panel.Title,
-		Id:    panelSpan(panel),
-		Type:  panel.Type,
-
+		Title:       panel.Title,
+		Id:          panelSpan(panel),
+		Type:        panel.Type,
+		Description: panelDescription(panel.CommonPanel.Description),
 		Transparent: panel.Transparent,
 		Decimals:    0,
 	}
@@ -632,10 +634,10 @@ func (converter *JSON) convertTable(panel sdk.Panel, isClusterCrd bool) panelsMo
 // converts a text panel
 func (converter *JSON) convertText(panel sdk.Panel) panelsModel.Panel {
 	textPanel := &panelsModel.Panel{
-		Title: panel.Title,
-		Id:    panelSpan(panel),
-		Type:  panel.Type,
-
+		Title:       panel.Title,
+		Id:          panelSpan(panel),
+		Type:        panel.Type,
+		Description: panelDescription(panel.CommonPanel.Description),
 		Transparent: panel.Transparent,
 		Decimals:    0,
 	}
@@ -736,6 +738,14 @@ func handleLegendFormat(l string) string {
 		return badPat.ReplaceAllStringFunc(l, f)
 	}
 	return l
+}
+
+func panelDescription(des *string) string {
+	d := ""
+	if des != nil {
+		d = *des
+	}
+	return d
 }
 
 func transferExpr(expr string, isClusterCrd bool, tp string) string {

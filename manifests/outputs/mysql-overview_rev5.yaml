@@ -1,0 +1,1213 @@
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: Dashboard
+metadata:
+  name: mysql-overview-rev5
+  namespace: default
+spec:
+  title: MySQL Overview
+  editable: true
+  tags:
+  - Percona
+  - MySQL
+  auto_refresh: 1m
+  timezone: browser
+  annotations:
+  - name: PMM Annotations
+    datasource: -- Grafana --
+    iconColor: '#e0752d'
+    enable: true
+    tags:
+    - pmm_annotation
+    type: tags
+  time:
+    from: now-12h
+    to: now
+  panels:
+  - title: MySQL Uptime
+    type: singlestat
+    id: 12
+    description: |-
+      **MySQL Uptime**
+
+      The amount of time since the last restart of the MySQL server process.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_status_uptime
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 5m
+    colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    color:
+    - value
+    height: 125px
+    valueName: current
+    decimals: 1
+    format: s
+    gauge:
+      maxValue: 100
+      thresholdmarkers: true
+  - title: Current QPS
+    type: singlestat
+    id: 13
+    description: "**Current QPS**\n\nBased on the queries reported by MySQL's ``SHOW
+      STATUS`` command, it is the number of statements executed by the server within
+      the last second. This variable includes statements executed within stored programs,
+      unlike the Questions variable. It does not count \n``COM_PING`` or ``COM_STATISTICS``
+      commands."
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_queries[3m]) or irate(mysql_global_status_queries[5m])
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    height: 125px
+    valueName: current
+    sparkline: bottom
+    decimals: 2
+    format: short
+    gauge:
+      maxValue: 100
+      thresholdmarkers: true
+  - title: InnoDB Buffer Pool Size
+    type: singlestat
+    id: 51
+    description: |-
+      **InnoDB Buffer Pool Size**
+
+      InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory.  Knowing how the InnoDB buffer pool works, and taking advantage of it to keep frequently accessed data in memory, is one of the most important aspects of MySQL tuning. The goal is to keep the working set in memory. In most cases, this should be between 60%-90% of available memory on a dedicated database host, but depends on many factors.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_variables_innodb_buffer_pool_size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 5m
+    colors:
+    - rgba(50, 172, 45, 0.97)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(245, 54, 54, 0.9)
+    height: 125px
+    valueName: current
+    format: bytes
+    gauge:
+      maxValue: 100
+      thresholdmarkers: true
+  - title: Buffer Pool Size of Total RAM
+    type: singlestat
+    id: 52
+    description: |-
+      **InnoDB Buffer Pool Size % of Total RAM**
+
+      InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory.  Knowing how the InnoDB buffer pool works, and taking advantage of it to keep frequently accessed data in memory, is one of the most important aspects of MySQL tuning. The goal is to keep the working set in memory. In most cases, this should be between 60%-90% of available memory on a dedicated database host, but depends on many factors.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: (mysql_global_variables_innodb_buffer_pool_size * 100) / on (instance)
+        node_memory_MemTotal_bytes
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 5m
+    colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    color:
+    - value
+    height: 125px
+    valueName: current
+    sparkline: bottom
+    format: percent
+    gauge:
+      maxValue: 100
+      thresholdmarkers: true
+  - title: MySQL Connections
+    type: graph
+    id: 92
+    description: "**Max Connections** \n\nMax Connections is the maximum permitted
+      number of simultaneous client connections. By default, this is 151. Increasing
+      this value increases the number of file descriptors that mysqld requires. If
+      the required number of descriptors are not available, the server reduces the
+      value of Max Connections.\n\nmysqld actually permits Max Connections + 1 clients
+      to connect. The extra connection is reserved for use by accounts that have the
+      SUPER privilege, such as root.\n\nMax Used Connections is the maximum number
+      of connections that have been in use simultaneously since the server started.\n\nConnections
+      is the number of connection attempts (successful or not) to the MySQL server."
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: max(max_over_time(mysql_global_status_threads_connected[3m])  or mysql_global_status_threads_connected
+        )
+      legendFormat: Connections
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_status_max_used_connections
+      legendFormat: Max Used Connections
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: mysql_global_variables_max_connections
+      legendFormat: Max Connections
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: none
+  - title: MySQL Client Thread Activity
+    type: graph
+    id: 10
+    description: |-
+      **MySQL Active Threads**
+
+      Threads Connected is the number of open connections, while Threads Running is the number of threads not sleeping.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: |-
+        max_over_time(mysql_global_status_threads_connected[3m]) or
+        max_over_time(mysql_global_status_threads_connected[5m])
+      legendFormat: Peak Threads Connected
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: |-
+        max_over_time(mysql_global_status_threads_running[3m]) or
+        max_over_time(mysql_global_status_threads_running[5m])
+      legendFormat: Peak Threads Running
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: "avg_over_time(mysql_global_status_threads_running[3m]) or \navg_over_time(mysql_global_status_threads_running[5m])"
+      legendFormat: Avg Threads Running
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg, current]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Questions
+    type: graph
+    id: 53
+    description: "**MySQL Questions**\n\nThe number of statements executed by the
+      server. This includes only statements sent to the server by clients and not
+      statements executed within stored programs, unlike the Queries used in the QPS
+      calculation. \n\nThis variable does not count the following commands:\n* ``COM_PING``\n*
+      ``COM_STATISTICS``\n* ``COM_STMT_PREPARE``\n* ``COM_STMT_CLOSE``\n* ``COM_STMT_RESET``"
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_questions[3m]) or irate(mysql_global_status_questions[5m])
+      legendFormat: Questions
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+  - title: MySQL Thread Cache
+    type: graph
+    id: 11
+    description: |-
+      **MySQL Thread Cache**
+
+      The thread_cache_size variable sets how many threads the server should cache to reuse. When a client disconnects, the client's threads are put in the cache if the cache is not full. It is autosized in MySQL 5.6.8 and above (capped to 100). Requests for threads are satisfied by reusing threads taken from the cache if possible, and only when the cache is empty is a new thread created.
+
+      * *Threads_created*: The number of threads created to handle connections.
+      * *Threads_cached*: The number of threads in the thread cache.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_variables_thread_cache_size
+      legendFormat: Thread Cache Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_status_threads_cached
+      legendFormat: Threads Cached
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_threads_created[3m]) or irate(mysql_global_status_threads_created[5m])
+      legendFormat: Threads Created
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Temporary Objects
+    type: graph
+    id: 22
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_created_tmp_tables[3m]) or irate(mysql_global_status_created_tmp_tables[5m])
+      legendFormat: Created Tmp Tables
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_created_tmp_disk_tables[3m]) or irate(mysql_global_status_created_tmp_disk_tables[5m])
+      legendFormat: Created Tmp Disk Tables
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_created_tmp_files[3m]) or irate(mysql_global_status_created_tmp_files[5m])
+      legendFormat: Created Tmp Files
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Select Types
+    type: graph
+    id: 311
+    description: |-
+      **MySQL Select Types**
+
+      As with most relational databases, selecting based on indexes is more efficient than scanning an entire table's data. Here we see the counters for selects not done with indexes.
+
+      * ***Select Scan*** is how many queries caused full table scans, in which all the data in the table had to be read and either discarded or returned.
+      * ***Select Range*** is how many queries used a range scan, which means MySQL scanned all rows in a given range.
+      * ***Select Full Join*** is the number of joins that are not joined on an index, this is usually a huge performance hit.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_select_full_join[3m]) or irate(mysql_global_status_select_full_join[5m])
+      legendFormat: Select Full Join
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_select_full_range_join[3m]) or irate(mysql_global_status_select_full_range_join[5m])
+      legendFormat: Select Full Range Join
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_select_range[3m]) or irate(mysql_global_status_select_range[5m])
+      legendFormat: Select Range
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 4
+      expr: rate(mysql_global_status_select_range_check[3m]) or irate(mysql_global_status_select_range_check[5m])
+      legendFormat: Select Range Check
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 5
+      expr: rate(mysql_global_status_select_scan[3m]) or irate(mysql_global_status_select_scan[5m])
+      legendFormat: Select Scan
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg, no_zero_series]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Sorts
+    type: graph
+    id: 30
+    description: |-
+      **MySQL Sorts**
+
+      Due to a query's structure, order, or other requirements, MySQL sorts the rows before returning them. For example, if a table is ordered 1 to 10 but you want the results reversed, MySQL then has to sort the rows to return 10 to 1.
+
+      This graph also shows when sorts had to scan a whole table or a given range of a table in order to return the results and which could not have been sorted via an index.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_sort_rows[3m]) or irate(mysql_global_status_sort_rows[5m])
+      legendFormat: Sort Rows
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_sort_range[3m]) or irate(mysql_global_status_sort_range[5m])
+      legendFormat: Sort Range
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_sort_merge_passes[3m]) or irate(mysql_global_status_sort_merge_passes[5m])
+      legendFormat: Sort Merge Passes
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 4
+      expr: rate(mysql_global_status_sort_scan[3m]) or irate(mysql_global_status_sort_scan[5m])
+      legendFormat: Sort Scan
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Slow Queries
+    type: graph
+    id: 48
+    description: |-
+      **MySQL Slow Queries**
+
+      Slow queries are defined as queries being slower than the long_query_time setting. For example, if you have long_query_time set to 3, all queries that take longer than 3 seconds to complete will show on this graph.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_slow_queries[3m]) or irate(mysql_global_status_slow_queries[5m])
+      legendFormat: Slow Queries
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Aborted Connections
+    type: graph
+    id: 47
+    description: |-
+      **Aborted Connections**
+
+      When a given host connects to MySQL and the connection is interrupted in the middle (for example due to bad credentials), MySQL keeps that info in a system table (since 5.6 this table is exposed in performance_schema).
+
+      If the amount of failed requests without a successful connection reaches the value of max_connect_errors, mysqld assumes that something is wrong and blocks the host from further connection.
+
+      To allow connections from that host again, you need to issue the ``FLUSH HOSTS`` statement.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_aborted_connects[3m]) or irate(mysql_global_status_aborted_connects[5m])
+      legendFormat: Aborted Connects (attempts)
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_aborted_clients[3m]) or irate(mysql_global_status_aborted_clients[5m])
+      legendFormat: Aborted Clients (timeout)
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Table Locks
+    type: graph
+    id: 32
+    description: |-
+      **Table Locks**
+
+      MySQL takes a number of different locks for varying reasons. In this graph we see how many Table level locks MySQL has requested from the storage engine. In the case of InnoDB, many times the locks could actually be row locks as it only takes table level locks in a few specific cases.
+
+      It is most useful to compare Locks Immediate and Locks Waited. If Locks waited is rising, it means you have lock contention. Otherwise, Locks Immediate rising and falling is normal activity.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_table_locks_immediate[3m]) or irate(mysql_global_status_table_locks_immediate[5m])
+      legendFormat: Table Locks Immediate
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_table_locks_waited[3m]) or irate(mysql_global_status_table_locks_waited[5m])
+      legendFormat: Table Locks Waited
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Network Traffic
+    type: graph
+    id: 9
+    description: |-
+      **MySQL Network Traffic**
+
+      Here we can see how much network traffic is generated by MySQL. Outbound is network traffic sent from MySQL and Inbound is network traffic MySQL has received.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_bytes_received[3m]) or irate(mysql_global_status_bytes_received[5m])
+      legendFormat: Inbound
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_bytes_sent[3m]) or irate(mysql_global_status_bytes_sent[5m])
+      legendFormat: Outbound
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    stack: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: Byte
+    decimals: 2
+  - title: MySQL Network Usage Hourly
+    type: graph
+    id: 381
+    description: |-
+      **MySQL Network Usage Hourly**
+
+      Here we can see how much network traffic is generated by MySQL per hour. You can use the bar graph to compare data sent by MySQL and data received by MySQL.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: increase(mysql_global_status_bytes_received[1h])
+      legendFormat: Received
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 1h
+    - refId: 2
+      expr: increase(mysql_global_status_bytes_sent[1h])
+      legendFormat: Sent
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 1h
+    bars: true
+    stack: true
+    legend: [as_table, min, max, avg]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: Byte
+    decimals: 2
+  - title: MySQL Internal Memory Overview
+    type: graph
+    id: 50
+    description: |-
+      ***System Memory***: Total Memory for the system.\
+      ***InnoDB Buffer Pool Data***: InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory.\
+      ***TokuDB Cache Size***: Similar in function to the InnoDB Buffer Pool,  TokuDB will allocate 50% of the installed RAM for its own cache.\
+      ***Key Buffer Size***: Index blocks for MYISAM tables are buffered and are shared by all threads. key_buffer_size is the size of the buffer used for index blocks.\
+      ***Adaptive Hash Index Size***: When InnoDB notices that some index values are being accessed very frequently, it builds a hash index for them in memory on top of B-Tree indexes.\
+       ***Query Cache Size***: The query cache stores the text of a SELECT statement together with the corresponding result that was sent to the client. The query cache has huge scalability problems in that only one thread can do an operation in the query cache at the same time.\
+      ***InnoDB Dictionary Size***: The data dictionary is InnoDB ‘s internal catalog of tables. InnoDB stores the data dictionary on disk, and loads entries into memory while the server is running.\
+      ***InnoDB Log Buffer Size***: The MySQL InnoDB log buffer allows transactions to run without having to write the log to disk before the transactions commit.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: node_memory_MemTotal_bytes
+      legendFormat: System Memory
+      step: 1m
+      intervalFactor: 2
+      format: time_series
+    - refId: 2
+      expr: mysql_global_status_innodb_page_size * on (instance) mysql_global_status_buffer_pool_pages
+      legendFormat: InnoDB Buffer Pool Data
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: mysql_global_variables_innodb_log_buffer_size
+      legendFormat: InnoDB Log Buffer Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 4
+      expr: mysql_global_variables_innodb_additional_mem_pool_size
+      legendFormat: InnoDB Additional Memory Pool Size
+      step: 1m
+      intervalFactor: 2
+      format: time_series
+      interval: $interval
+    - refId: 5
+      expr: mysql_global_status_innodb_mem_dictionary
+      legendFormat: InnoDB Dictionary Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 6
+      expr: mysql_global_variables_key_buffer_size
+      legendFormat: Key Buffer Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 7
+      expr: mysql_global_variables_query_cache_size
+      legendFormat: Query Cache Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 8
+      expr: mysql_global_status_innodb_mem_adaptive_hash
+      legendFormat: Adaptive Hash Index Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 9
+      expr: mysql_global_variables_tokudb_cache_size
+      legendFormat: TokuDB Cache Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    stack: true
+    legend: [as_table, to_the_right, min, max, avg, no_null_series, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: Byte
+  - title: Top Command Counters
+    type: graph
+    id: 14
+    description: |-
+      **Top Command Counters**
+
+      The Com_{{xxx}} statement counter variables indicate the number of times each xxx statement has been executed. There is one status variable for each type of statement. For example, Com_delete and Com_update count [``DELETE``](https://dev.mysql.com/doc/refman/5.7/en/delete.html) and [``UPDATE``](https://dev.mysql.com/doc/refman/5.7/en/update.html) statements, respectively. Com_delete_multi and Com_update_multi are similar but apply to [``DELETE``](https://dev.mysql.com/doc/refman/5.7/en/delete.html) and [``UPDATE``](https://dev.mysql.com/doc/refman/5.7/en/update.html) statements that use multiple-table syntax.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: topk(5, rate(mysql_global_status_commands_total[3m])) or topk(5, irate(mysql_global_status_commands_total[5m]))
+      legendFormat: Com_{{command}}
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, to_the_right, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: Top Command Counters Hourly
+    type: graph
+    id: 39
+    description: |-
+      **Top Command Counters Hourly**
+
+      The Com_{{xxx}} statement counter variables indicate the number of times each xxx statement has been executed. There is one status variable for each type of statement. For example, Com_delete and Com_update count [``DELETE``](https://dev.mysql.com/doc/refman/5.7/en/delete.html) and [``UPDATE``](https://dev.mysql.com/doc/refman/5.7/en/update.html) statements, respectively. Com_delete_multi and Com_update_multi are similar but apply to [``DELETE``](https://dev.mysql.com/doc/refman/5.7/en/delete.html) and [``UPDATE``](https://dev.mysql.com/doc/refman/5.7/en/update.html) statements that use multiple-table syntax.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: topk(5, increase(mysql_global_status_commands_total[1h]))
+      legendFormat: Com_{{command}}
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: 1h
+    bars: true
+    stack: true
+    legend: [as_table, to_the_right, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Handlers
+    type: graph
+    id: 8
+    description: |-
+      **MySQL Handlers**
+
+      Handler statistics are internal statistics on how MySQL is selecting, updating, inserting, and modifying rows, tables, and indexes.
+
+      This is in fact the layer between the Storage Engine and MySQL.
+
+      * `read_rnd_next` is incremented when the server performs a full table scan and this is a counter you don't really want to see with a high value.
+      * `read_key` is incremented when a read is done with an index.
+      * `read_next` is incremented when the storage engine is asked to 'read the next index entry'. A high value means a lot of index scans are being done.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_handlers_total[3m]) or irate(mysql_global_status_handlers_total[5m])
+      legendFormat: '{{handler}}'
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, to_the_right, min, max, avg, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Transaction Handlers
+    type: graph
+    id: 28
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_handlers_total[3m]) or irate(mysql_global_status_handlers_total[5m])
+      legendFormat: '{{handler}}'
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [as_table, to_the_right, min, max, avg, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: Process States
+    type: graph
+    id: 40
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_info_schema_threads
+      legendFormat: '{{state}}'
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [as_table, to_the_right, max, avg, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: Top Process States Hourly
+    type: graph
+    id: 49
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: topk(5, avg_over_time(mysql_info_schema_threads[1h]))
+      legendFormat: '{{state}}'
+      step: 1m
+      intervalFactor: 1
+      interval: 1h
+    bars: true
+    stack: true
+    legend: [as_table, to_the_right, max, avg, no_zero_series]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Query Cache Memory
+    type: graph
+    id: 46
+    description: |-
+      **MySQL Query Cache Memory**
+
+      The query cache has huge scalability problems in that only one thread can do an operation in the query cache at the same time. This serialization is true not only for SELECTs, but also for INSERT/UPDATE/DELETE.
+
+      This also means that the larger the `query_cache_size` is set to, the slower those operations become. In concurrent environments, the MySQL Query Cache quickly becomes a contention point, decreasing performance. MariaDB and AWS Aurora have done work to try and eliminate the query cache contention in their flavors of MySQL, while MySQL 8.0 has eliminated the query cache feature.
+
+      The recommended settings for most environments is to set:
+        ``query_cache_type=0``
+        ``query_cache_size=0``
+
+      Note that while you can dynamically change these values, to completely remove the contention point you have to restart the database.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_status_qcache_free_memory
+      legendFormat: Free Memory
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_variables_query_cache_size
+      legendFormat: Query Cache Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: Byte
+    decimals: 2
+  - title: MySQL Query Cache Activity
+    type: graph
+    id: 45
+    description: |-
+      **MySQL Query Cache Activity**
+
+      The query cache has huge scalability problems in that only one thread can do an operation in the query cache at the same time. This serialization is true not only for SELECTs, but also for INSERT/UPDATE/DELETE.
+
+      This also means that the larger the `query_cache_size` is set to, the slower those operations become. In concurrent environments, the MySQL Query Cache quickly becomes a contention point, decreasing performance. MariaDB and AWS Aurora have done work to try and eliminate the query cache contention in their flavors of MySQL, while MySQL 8.0 has eliminated the query cache feature.
+
+      The recommended settings for most environments is to set:
+      ``query_cache_type=0``
+      ``query_cache_size=0``
+
+      Note that while you can dynamically change these values, to completely remove the contention point you have to restart the database.
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_qcache_hits[3m]) or irate(mysql_global_status_qcache_hits[5m])
+      legendFormat: Hits
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_qcache_inserts[3m]) or irate(mysql_global_status_qcache_inserts[5m])
+      legendFormat: Inserts
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_qcache_not_cached[3m]) or irate(mysql_global_status_qcache_not_cached[5m])
+      legendFormat: Not Cached
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 4
+      expr: rate(mysql_global_status_qcache_lowmem_prunes[3m]) or irate(mysql_global_status_qcache_lowmem_prunes[5m])
+      legendFormat: Prunes
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 5
+      expr: mysql_global_status_qcache_queries_in_cache
+      legendFormat: Queries in Cache
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL File Openings
+    type: graph
+    id: 43
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_opened_files[3m]) or irate(mysql_global_status_opened_files[5m])
+      legendFormat: Openings
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Open Files
+    type: graph
+    id: 41
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_status_open_files
+      legendFormat: Open Files
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_variables_open_files_limit
+      legendFormat: Open Files Limit
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 3
+      expr: mysql_global_status_innodb_num_open_files
+      legendFormat: InnoDB Open Files
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Table Open Cache Status
+    type: graph
+    id: 44
+    description: |-
+      **MySQL Table Open Cache Status**
+
+      The recommendation is to set the `table_open_cache_instances` to a loose correlation to virtual CPUs, keeping in mind that more instances means the cache is split more times. If you have a cache set to 500 but it has 10 instances, each cache will only have 50 cached.
+
+      The `table_definition_cache` and `table_open_cache` can be left as default as they are auto-sized MySQL 5.6 and above (ie: do not set them to any value).
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(mysql_global_status_opened_tables[3m]) or irate(mysql_global_status_opened_tables[5m])
+      legendFormat: Openings
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: rate(mysql_global_status_table_open_cache_hits[3m]) or irate(mysql_global_status_table_open_cache_hits[5m])
+      legendFormat: Hits
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_table_open_cache_misses[3m]) or irate(mysql_global_status_table_open_cache_misses[5m])
+      legendFormat: Misses
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 4
+      expr: rate(mysql_global_status_table_open_cache_overflows[3m]) or irate(mysql_global_status_table_open_cache_overflows[5m])
+      legendFormat: Misses due to Overflows
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 5
+      expr: (rate(mysql_global_status_table_open_cache_hits[3m]) or irate(mysql_global_status_table_open_cache_hits[5m]))/((rate(mysql_global_status_table_open_cache_hits[3m])
+        or irate(mysql_global_status_table_open_cache_hits[5m]))+(rate(mysql_global_status_table_open_cache_misses[3m])
+        or irate(mysql_global_status_table_open_cache_misses[5m])))
+      legendFormat: Table Open Cache Hit Ratio
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Open Tables
+    type: graph
+    id: 42
+    description: |-
+      **MySQL Open Tables**
+
+      The recommendation is to set the `table_open_cache_instances` to a loose correlation to virtual CPUs, keeping in mind that more instances means the cache is split more times. If you have a cache set to 500 but it has 10 instances, each cache will only have 50 cached.
+
+      The `table_definition_cache` and `table_open_cache` can be left as default as they are auto-sized MySQL 5.6 and above (ie: do not set them to any value).
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_status_open_tables
+      legendFormat: Open Tables
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_variables_table_open_cache
+      legendFormat: Table Open Cache
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: MySQL Table Definition Cache
+    type: graph
+    id: 54
+    description: |-
+      **MySQL Table Definition Cache**
+
+      The recommendation is to set the `table_open_cache_instances` to a loose correlation to virtual CPUs, keeping in mind that more instances means the cache is split more times. If you have a cache set to 500 but it has 10 instances, each cache will only have 50 cached.
+
+      The `table_definition_cache` and `table_open_cache` can be left as default as they are auto-sized MySQL 5.6 and above (ie: do not set them to any value).
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: mysql_global_status_open_table_definitions
+      legendFormat: Open Table Definitions
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: mysql_global_variables_table_definition_cache
+      legendFormat: Table Definitions Cache Size
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: rate(mysql_global_status_opened_table_definitions[3m]) or irate(mysql_global_status_opened_table_definitions[5m])
+      legendFormat: Opened Table Definitions
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [as_table, min, max, avg]
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: I/O Activity
+    type: graph
+    id: 31
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(node_vmstat_pgpgin[3m]) * 1024 or irate(node_vmstat_pgpgin[5m]) *
+        1024
+      legendFormat: Page In
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 2
+      expr: rate(node_vmstat_pgpgout[3m]) * 1024 or irate(node_vmstat_pgpgout[5m])
+        * 1024
+      legendFormat: Page Out
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [avg]
+    yaxes:
+    - decimals: 3
+      format: Byte
+  - title: Memory Distribution
+    type: graph
+    id: 37
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Buffers
+        + node_memory_Cached)
+      legendFormat: Used
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 2
+      expr: node_memory_MemFree_bytes
+      legendFormat: Free
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 3
+      expr: node_memory_Buffers
+      legendFormat: Buffers
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 4
+      expr: node_memory_Cached
+      legendFormat: Cached
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    stack: true
+    legend: [avg]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: Byte
+  - title: CPU Usage / Load
+    type: graph
+    id: 2
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: clamp_max(((avg by (mode) ( (clamp_max(rate(node_cpu_seconds_total[3m]),1))
+        or (clamp_max(irate(node_cpu_seconds_total[5m]),1)) ))*100 or (avg_over_time(node_cpu_seconds_total_average[3m])
+        or avg_over_time(node_cpu_seconds_total_average[5m]))),100)
+      legendFormat: '{{mode}}'
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      hide: true
+      expr: clamp_max(max by () (sum  by (cpu) ( (clamp_max(rate(node_cpu_seconds_total[3m]),1))
+        or (clamp_max(irate(node_cpu_seconds_total[5m]),1)) ))*100,100)
+      legendFormat: Max Core Utilization
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 3
+      expr: node_load1
+      legendFormat: Load 1m
+      step: 1m
+      intervalFactor: 2
+      format: time_series
+    lines: true
+    stack: true
+    legend: [avg, no_null_series, no_zero_series]
+    yaxes:
+    - decimals: 1
+      format: percent (0.0-1.0)
+  - title: Disk Latency
+    type: graph
+    id: 36
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: |-
+        sum((rate(node_disk_read_time_seconds_total[3m]) / rate(node_disk_reads_completed_total[3m])) or (irate(node_disk_read_time_seconds_total[5m]) / irate(node_disk_reads_completed_total[5m]))
+        or avg_over_time(aws_rds_read_latency_average[3m]) or avg_over_time(aws_rds_read_latency_average[5m]))
+      legendFormat: Read
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: "sum((rate(node_disk_write_time_seconds_total[3m]) / rate(node_disk_writes_completed_total[3m]))
+        or (irate(node_disk_write_time_seconds_total[5m]) / irate(node_disk_writes_completed_total[5m]))
+        or \navg_over_time(aws_rds_write_latency_average[3m]) or avg_over_time(aws_rds_write_latency_average[5m]))"
+      legendFormat: Write
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    legend: [avg, no_null_series, no_zero_series]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: none
+    decimals: 2
+  - title: Network Traffic
+    type: graph
+    id: 21
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: 'sum(rate(node_network_receive_bytes_total[3m])) or sum(irate(node_network_receive_bytes_total[5m]))
+        or sum(max_over_time(rdsosmetrics_network_rx[3m])) or sum(max_over_time(rdsosmetrics_network_rx[5m])) '
+      legendFormat: Inbound
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    - refId: 2
+      expr: |-
+        sum(rate(node_network_transmit_bytes_total[3m])) or sum(irate(node_network_transmit_bytes_total[5m])) or
+        sum(max_over_time(rdsosmetrics_network_tx[3m])) or sum(max_over_time(rdsosmetrics_network_tx[5m]))
+      legendFormat: Outbound
+      step: 1m
+      intervalFactor: 1
+      format: time_series
+      interval: $interval
+    lines: true
+    legend: [avg]
+    height: 250px
+    yaxes:
+    - decimals: 3
+      format: Byte
+  - title: Swap Activity
+    type: graph
+    id: 38
+    datasource: ${DS_PROMETHEUS}
+    targets:
+    - refId: 1
+      expr: rate(node_vmstat_pswpin[3m]) * 4096 or irate(node_vmstat_pswpin[5m]) *
+        4096
+      legendFormat: Swap In (Reads)
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    - refId: 2
+      expr: rate(node_vmstat_pswpout[3m]) * 4096 or irate(node_vmstat_pswpout[5m])
+        * 4096
+      legendFormat: Swap Out (Writes)
+      step: 1m
+      intervalFactor: 1
+      interval: $interval
+    lines: true
+    legend: [avg]
+    yaxes:
+    - decimals: 3
+      format: Byte
+  templatings:
+  - name: interval
+    type: interval
+    label: Interval
+    default: $__auto_interval_interval
+    values: [$__auto_interval_interval, 1s, 5s, 1m, 5m, 1h, 6h, 1d]
+  - name: host
+    type: query
+    label: Host
+    datasource: ${DS_PROMETHEUS}
+    request: label_values(mysql_up, instance)

@@ -19,6 +19,8 @@ This repo is aimed at KubeSphere developers who want to understand dashboard dat
   - [Panels](#panels-1)
   - [Time Range](#time-range)
   - [Variables](#variables)
+- [Converter tool](#converter-tool)
+  - [Usage](#Usage)
 - [Development](#development)
   - [APIs](#apis)
   - [Backend](#backend)
@@ -158,20 +160,11 @@ Time range specifies current dashboard time for display. The following are examp
 |--|--|
 |label_values(metric, label)|Returns a list of label values for the label in the specified metric.|
 
-## converter
+## converter tool
 
 we support a converter tool which can be used for importing dashboards from Grafana dashboard templates.
 
-### how to use
-if we want to convert a dashboard json template to a k8s manifest, you can use make cmdline like this below:
-```
-	make converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT)
-```
-or:
-```
-	go run ./cmd/converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT) -name=$(Name)
-```
-### Usage of converter
+### Usage
 ```
 Usage of converter:
   -inputPath string
@@ -185,6 +178,17 @@ Usage of converter:
   -outputPath string
         a output path for the converter to store manifests (default "./manifests/outputs")
 ```
+
+if we want to convert a dashboard json template to a k8s manifest, you can use make cmdline like this below:
+```
+	make converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT)
+```
+
+or:
+```
+	go run ./cmd/converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT) -name=$(Name)
+```
+
 ## Development
 
 ### APIs

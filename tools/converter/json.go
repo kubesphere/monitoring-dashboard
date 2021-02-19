@@ -511,7 +511,7 @@ func (converter *JSON) convertSingleStat(panel sdk.Panel, isClusterCrd bool) pan
 	}
 
 	// handles gauge
-	gauge := panelsModel.Gauge{
+	gauge := &panelsModel.Gauge{
 		MaxValue:         int64(panel.SinglestatPanel.Gauge.MaxValue),
 		MinValue:         int64(panel.SinglestatPanel.Gauge.MinValue),
 		Show:             panel.SinglestatPanel.Gauge.Show,
@@ -561,7 +561,7 @@ func (converter *JSON) convertCustom(panel sdk.Panel, isClusterCrd bool) panelsM
 func (converter *JSON) convertBarGauge(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
 	// set options
 	barGaugePanel := &panelsModel.Panel{
-		Options: panelsModel.BarGaugeOptions{
+		Options: &panelsModel.BarGaugeOptions{
 			Orientation: panel.BarGaugePanel.Options.Orientation,
 			TextMode:    panel.BarGaugePanel.Options.TextMode,
 			ColorMode:   panel.BarGaugePanel.Options.ColorMode,

@@ -12,12 +12,12 @@ package panels
 // Supported panel type
 type Panel struct {
 	// private property of the bargauge panel
-	Options BarGaugeOptions `json:"options,omitempty,omitempty" yaml:"options,omitempty,omitempty"`
+	Options *BarGaugeOptions `json:"options,omitempty" yaml:"options,omitempty"`
 
 	// ****common properties start
 	// Name pf the panel
 	Title string `json:"title,omitempty" yaml:"title,omitempty"`
-	// Must be `graph`
+	// The type of the panel
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 	// Panel ID
 	Id int64 `json:"id,omitempty" yaml:"id,omitempty"`
@@ -26,7 +26,7 @@ type Panel struct {
 	// datasource
 	Datasource string `json:"datasource,omitempty" yaml:"datasource,omitempty"`
 	// A collection of queries
-	Targets []Target `json:"targets,omitempty,omitempty" yaml:"targets,omitempty,omitempty"`
+	Targets []Target `json:"targets,omitempty" yaml:"targets,omitempty"`
 	// Display as a bar chart
 	Bars bool `json:"bars,omitempty" yaml:"bars,omitempty"`
 	// Set series color
@@ -62,7 +62,7 @@ type Panel struct {
 	// Display unit
 	Format string `json:"format,omitempty" yaml:"format,omitempty"`
 	// gauge
-	Gauge Gauge `json:"gauge,omitempty" yaml:"gauge,omitempty"`
+	Gauge *Gauge `json:"gauge,omitempty" yaml:"gauge,omitempty"`
 
 	// table panel has no private property
 

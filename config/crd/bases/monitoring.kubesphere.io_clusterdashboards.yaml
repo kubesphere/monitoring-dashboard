@@ -306,7 +306,30 @@ spec:
                         type:
                           type: string
                       type: object
+<<<<<<< HEAD
                     interval:
+=======
+                    type: array
+                  time_series_aggregations:
+                    items:
+                      type: string
+                    type: array
+                  title:
+                    description: '****common properties start Name pf the panel'
+                    type: string
+                  transparent:
+                    description: transparent
+                    type: boolean
+                  type:
+                    description: The type of the panel
+                    type: string
+                  valueName:
+                    description: value name
+                    type: string
+                  yaxes:
+                    description: private property of graph panel Y-axis options
+                    items:
+>>>>>>> 49d6533 (adjust code format)
                       properties:
                         default:
                           type: string

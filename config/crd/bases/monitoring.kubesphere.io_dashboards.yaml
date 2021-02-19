@@ -479,7 +479,7 @@ spec:
                     description: transparent
                     type: boolean
                   type:
-                    description: Must be `graph`
+                    description: The type of the panel
                     type: string
                   valueName:
                     description: value name

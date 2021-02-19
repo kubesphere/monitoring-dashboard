@@ -19,6 +19,14 @@ spec:
       expr: DCGM_FI_DEV_GPU_TEMP
       legendFormat: GPU {{gpu}}
       instant: true
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -30,6 +38,14 @@ spec:
     targets:
     - refId: 1
       expr: avg(DCGM_FI_DEV_GPU_TEMP)
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
   - title: GPU Power Usage
     type: graph
     id: 10
@@ -38,6 +54,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_POWER_USAGE
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -49,6 +73,14 @@ spec:
     targets:
     - refId: 1
       expr: sum(DCGM_FI_DEV_POWER_USAGE)
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
   - title: GPU SM Clocks
     type: graph
     id: 2
@@ -59,6 +91,14 @@ spec:
       legendFormat: GPU {{gpu}}
       intervalFactor: 1
       format: time_series
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -72,6 +112,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_MEM_CLOCK
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -85,6 +133,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_GPU_UTIL
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -98,6 +154,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_MEM_COPY_UTIL
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, current]
     yaxes:
@@ -111,6 +175,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_FB_USED
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [to_the_right, max, avg]
     yaxes:
@@ -124,6 +196,14 @@ spec:
     - refId: 1
       expr: DCGM_FI_DEV_FB_USED
       legendFormat: GPU {{gpu}}
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg]
     yaxes:

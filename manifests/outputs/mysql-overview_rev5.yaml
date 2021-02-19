@@ -169,6 +169,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     height: 250px
@@ -209,6 +217,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg, current]
     yaxes:
@@ -232,6 +248,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -270,6 +294,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -299,6 +331,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -353,6 +393,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg, no_zero_series]
     height: 250px
@@ -399,6 +447,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg, no_zero_series]
     yaxes:
@@ -421,6 +477,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -454,6 +518,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -485,6 +557,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -514,6 +594,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     stack: true
     legend: [as_table, min, max, avg]
@@ -545,6 +633,14 @@ spec:
       format: time_series
       interval: 1h
     bars: true
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     stack: true
     legend: [as_table, min, max, avg]
     height: 250px
@@ -628,6 +724,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     stack: true
     legend: [as_table, to_the_right, min, max, avg, no_null_series, no_zero_series]
@@ -650,6 +754,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, min, max, avg]
     yaxes:
@@ -673,6 +785,14 @@ spec:
       format: time_series
       interval: 1h
     bars: true
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     stack: true
     legend: [as_table, to_the_right, min, max, avg]
     yaxes:
@@ -701,6 +821,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, min, max, avg, no_zero_series]
     yaxes:
@@ -718,6 +846,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, min, max, avg, no_zero_series]
     yaxes:
@@ -735,6 +871,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, to_the_right, max, avg, no_zero_series]
     yaxes:
@@ -753,6 +897,14 @@ spec:
       intervalFactor: 1
       interval: 1h
     bars: true
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     stack: true
     legend: [as_table, to_the_right, max, avg, no_zero_series]
     yaxes:
@@ -790,6 +942,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -848,6 +1008,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -865,6 +1033,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -894,6 +1070,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -948,6 +1132,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -979,6 +1171,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -1017,6 +1217,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [as_table, min, max, avg]
     yaxes:
@@ -1042,6 +1250,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [avg]
     yaxes:
@@ -1077,6 +1293,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     stack: true
     legend: [avg]
@@ -1113,6 +1337,14 @@ spec:
       step: 1m
       intervalFactor: 2
       format: time_series
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     stack: true
     legend: [avg, no_null_series, no_zero_series]
@@ -1142,6 +1374,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     legend: [avg, no_null_series, no_zero_series]
     height: 250px
     yaxes:
@@ -1170,6 +1410,14 @@ spec:
       intervalFactor: 1
       format: time_series
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [avg]
     height: 250px
@@ -1195,6 +1443,14 @@ spec:
       step: 1m
       intervalFactor: 1
       interval: $interval
+    colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
     lines: true
     legend: [avg]
     yaxes:

@@ -364,6 +364,7 @@ func (converter *JSON) convertGraph(panel sdk.Panel, isClusterCrd bool) panelsMo
 		Title:       panel.Title,
 		Type:        panel.Type,
 		Decimals:    decimals,
+		Colors:      defaultColors(),
 		Description: panelDescription(panel.CommonPanel.Description),
 		Id:          panelSpan(panel),
 		Bars:        panel.GraphPanel.Bars,
@@ -474,6 +475,8 @@ func (converter *JSON) convertSingleStat(panel sdk.Panel, isClusterCrd bool) pan
 			panel.SinglestatPanel.Colors[1],
 			panel.SinglestatPanel.Colors[2],
 		}
+	} else {
+		singleStat.Colors = defaultColors()
 	}
 
 	var colorOpts []string
@@ -529,6 +532,7 @@ func (converter *JSON) convertCustom(panel sdk.Panel, isClusterCrd bool) panelsM
 		Title:    panel.Title,
 		// Type:     panel.Type,
 		Type:        "singlestat",
+		Colors:      defaultColors(),
 		Description: panelDescription(panel.CommonPanel.Description),
 		Id:          panelSpan(panel),
 	}
@@ -570,6 +574,7 @@ func (converter *JSON) convertBarGauge(panel sdk.Panel, isClusterCrd bool) panel
 		Decimals:    0,
 		Title:       panel.Title,
 		Type:        panel.Type,
+		Colors:      defaultColors(),
 		Description: panelDescription(panel.CommonPanel.Description),
 		Id:          panelSpan(panel),
 	}
@@ -596,6 +601,7 @@ func (converter *JSON) convertTable(panel sdk.Panel, isClusterCrd bool) panelsMo
 		Title:       panel.Title,
 		Id:          panelSpan(panel),
 		Type:        panel.Type,
+		Colors:      defaultColors(),
 		Description: panelDescription(panel.CommonPanel.Description),
 		Transparent: panel.Transparent,
 		Decimals:    0,
@@ -637,6 +643,7 @@ func (converter *JSON) convertText(panel sdk.Panel) panelsModel.Panel {
 		Title:       panel.Title,
 		Id:          panelSpan(panel),
 		Type:        panel.Type,
+		Colors:      defaultColors(),
 		Description: panelDescription(panel.CommonPanel.Description),
 		Transparent: panel.Transparent,
 		Decimals:    0,
@@ -748,16 +755,21 @@ func panelDescription(des *string) string {
 	return d
 }
 
+func defaultColors() []string {
+	return []string{"#60acfc", "#23c2db", "#64d5b2", "#d5ec5a", "#ffb64e", "#fb816d", "#d15c7f"}
+}
+
 func transferExpr(expr string, isClusterCrd bool, tp string) string {
 	// example: sum (elasticsearch_jvm_memory_used_bytes{cluster="$cluster",name=~"$name"})/ sum (elasticsearch_jvm_memory_max_bytes{cluster="$cluster",name=~"$name"})
 	// transfer to: sum by(cluster,name)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster,name)  (elasticsearch_jvm_memory_max_bytes) * 100
+
 	// free the door if don't match a `[{}]` regex style
 	pat := regexp.MustCompile(`[\{\}]`)
 	if !pat.Match([]byte(expr)) {
 		return ""
 	}
-	// handles $interval
-	pat1 := regexp.MustCompile(`\$interval`)
+	// handles $interval or $__interval
+	pat1 := regexp.MustCompile(`\$_{0,2}interval`)
 	if pat1.Match([]byte(expr)) {
 		expr = pat1.ReplaceAllString(expr, "3m")
 	}

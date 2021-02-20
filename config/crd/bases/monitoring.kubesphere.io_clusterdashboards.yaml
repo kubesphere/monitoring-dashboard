@@ -229,7 +229,7 @@ spec:
                       description: transparent
                       type: boolean
                     type:
-                      description: Must be `graph`
+                      description: The type of the panel
                       type: string
                     valueName:
                       description: value name
@@ -260,106 +260,41 @@ spec:
               templatings:
                 description: // Templating variables
                 items:
-                  description: referers to https://pkg.go.dev/github.com/K-Phoen/grabana/decoder#DashboardVariable
+                  description: TemplateVar combines above types to one struct
                   properties:
-                    const:
-                      properties:
-                        default:
-                          type: string
-                        label:
-                          type: string
-                        name:
-                          type: string
-<<<<<<< HEAD
-                        values_map:
-                          additionalProperties:
-                            type: string
-                          type: object
-                      type: object
-                    custom:
-                      properties:
-                        all_value:
-                          type: string
-                        default:
-                          type: string
-                        include_all:
-                          type: boolean
-                        label:
-                          type: string
-                        name:
-                          type: string
-                        values_map:
-                          additionalProperties:
-                            type: string
-                          type: object
-                      type: object
-                    datasource:
-                      properties:
-                        include_all:
-                          type: boolean
-                        label:
-                          type: string
-                        name:
-                          type: string
-                        regex:
-                          type: string
-                        type:
-                          type: string
-                      type: object
-<<<<<<< HEAD
-                    interval:
-=======
-                    type: array
-                  time_series_aggregations:
-                    items:
+                    all_value:
                       type: string
-                    type: array
-                  title:
-                    description: '****common properties start Name pf the panel'
-                    type: string
-                  transparent:
-                    description: transparent
-                    type: boolean
-                  type:
-                    description: The type of the panel
-                    type: string
-                  valueName:
-                    description: value name
-                    type: string
-                  yaxes:
-                    description: private property of graph panel Y-axis options
-                    items:
->>>>>>> 49d6533 (adjust code format)
-                      properties:
-                        default:
-                          type: string
-                        label:
-                          type: string
-                        name:
-                          type: string
-                        values:
-                          items:
-                            type: string
-                          type: array
-                      type: object
+                    datasource:
+                      description: from type VariableQuery
+                      type: string
+                    default:
+                      type: string
+                    default_all:
+                      type: boolean
+                    include_all:
+                      type: boolean
+                    label:
+                      type: string
+                    name:
+                      description: common properties, more than one containing
+                      type: string
                     query:
-                      properties:
-                        all_value:
-                          type: string
-                        datasource:
-                          type: string
-                        default_all:
-                          type: boolean
-                        include_all:
-                          type: boolean
-                        label:
-                          type: string
-                        name:
-                          type: string
-                        regex:
-                          type: string
-                        request:
-                          type: string
+                      description: from type VariableDatasource
+                      type: string
+                    regex:
+                      type: string
+                    request:
+                      type: string
+                    type:
+                      type: string
+                    values:
+                      description: from type VariableInterval
+                      items:
+                        type: string
+                      type: array
+                    values_map:
+                      additionalProperties:
+                        type: string
                       type: object
                   type: object
                 type: array
@@ -384,85 +319,6 @@ spec:
                 type: string
             type: object
         type: object
-=======
-                      required:
-                      - decimals
-                      type: object
-                    type: array
-                type: object
-              type: array
-            shared_crosshair:
-              type: boolean
-            tags:
-              items:
-                type: string
-              type: array
-            templatings:
-              description: // Templating variables
-              items:
-                description: TemplateVar combines above types to one struct
-                properties:
-                  all_value:
-                    type: string
-                  datasource:
-                    description: from type VariableQuery
-                    type: string
-                  default:
-                    type: string
-                  default_all:
-                    type: boolean
-                  include_all:
-                    type: boolean
-                  label:
-                    type: string
-                  name:
-                    description: common properties, more than one containing
-                    type: string
-                  query:
-                    description: from type VariableDatasource
-                    type: string
-                  regex:
-                    type: string
-                  request:
-                    type: string
-                  type:
-                    type: string
-                  values:
-                    description: from type VariableInterval
-                    items:
-                      type: string
-                    type: array
-                  values_map:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
-              type: array
-            time:
-              description: Time ranges of the metrics for display
-              properties:
-                from:
-                  description: Start time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
-                    eg. `now-1M`. It denotes the end time is set to the last month
-                    since now.
-                  type: string
-                to:
-                  description: End time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
-                    eg. `now-1M`. It denotes the start time is set to the last month
-                    since now.
-                  type: string
-              type: object
-            timezone:
-              type: string
-            title:
-              description: common fields
-              type: string
-          type: object
-      type: object
-  version: v1alpha1
-  versions:
-  - name: v1alpha1
->>>>>>> 66c05e0 (modifies crd resources)
     served: true
     storage: true
 status:

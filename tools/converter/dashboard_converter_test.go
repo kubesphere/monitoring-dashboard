@@ -19,47 +19,20 @@ func defaultVar(varType string) sdk.TemplateVar {
 	}
 }
 
-func TestConvertInvalidJSONToYAML(t *testing.T) {
+func TestConvertInvalidJSONToKubsphereDashboard(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewJSON(zap.NewNop())
-	err := converter.ToYAML(bytes.NewBufferString(""), bytes.NewBufferString(""), false)
+	converter := NewConverter(zap.NewNop())
+	err := converter.ConvertKubsphereDashboard(bytes.NewBufferString(""), bytes.NewBufferString(""), false, "default", "test-dashboard")
 
 	req.Error(err)
 }
 
-func TestConvertValidJSONToYaml(t *testing.T) {
+func TestConvertValidJSONToKubsphereClusterManifest(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewJSON(zap.NewNop())
-	err := converter.ToYAML(bytes.NewBufferString("{}"), bytes.NewBufferString(""), false)
-
-	req.NoError(err)
-}
-
-func TestConvertInvalidJSONToK8SManifest(t *testing.T) {
-	req := require.New(t)
-
-	converter := NewJSON(zap.NewNop())
-	err := converter.ToK8SManifest(bytes.NewBufferString(""), bytes.NewBufferString(""), false, "default", "test-dashboard")
-
-	req.Error(err)
-}
-
-func TestConvertValidJSONK8SManifest(t *testing.T) {
-	req := require.New(t)
-
-	converter := NewJSON(zap.NewNop())
-	err := converter.ToK8SManifest(bytes.NewBufferString("{}"), bytes.NewBufferString(""), false, "default", "test-dashboard")
-
-	req.NoError(err)
-}
-
-func TestConvertValidJSONK8SClusterManifest(t *testing.T) {
-	req := require.New(t)
-
-	converter := NewJSON(zap.NewNop())
-	err := converter.ToK8SManifest(bytes.NewBufferString("{}"), bytes.NewBufferString(""), true, "default", "test-cluster-dashboard")
+	converter := NewConverter(zap.NewNop())
+	err := converter.ConvertKubsphereDashboard(bytes.NewBufferString("{}"), bytes.NewBufferString(""), true, "default", "test-cluster-dashboard")
 
 	req.NoError(err)
 }
@@ -77,7 +50,7 @@ func TestConvertGeneralSettings(t *testing.T) {
 		Value: "5s",
 	}
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertGeneralSettings(board, dashboard)
@@ -94,7 +67,7 @@ func TestConvertUnknownVar(t *testing.T) {
 
 	variable := defaultVar("unknown")
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -115,7 +88,7 @@ func TestConvertIntervalVar(t *testing.T) {
 		{Text: "1min", Value: "1m"},
 	}
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -145,7 +118,7 @@ func TestConvertCustomVar(t *testing.T) {
 		{Text: "99th", Value: "99"},
 	}
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -178,7 +151,7 @@ func TestConvertConstVar(t *testing.T) {
 		{Text: "99th", Value: "99"},
 	}
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -210,7 +183,7 @@ func TestConvertQueryVar(t *testing.T) {
 	variable.Datasource = &datasource
 	variable.Query = "prom_query"
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -232,7 +205,7 @@ func TestConvertQueryVar(t *testing.T) {
 
 // func TestConvertTargetFailsIfNoValidTargetIsGiven(t *testing.T) {
 // 	req := require.New(t)
-// 	converter := NewJSON(zap.NewNop())
+// 	converter := NewConverter(zap.NewNop())
 // 	var target sdk.Target
 // 	convertedTarget := converter.convertTarget(target, false, 0)
 // 	req.Zero(*convertedTarget)
@@ -241,7 +214,7 @@ func TestConvertQueryVar(t *testing.T) {
 func TestConvertTargetWithPrometheusTarget(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	target := sdk.Target{
 		Expr:         "prometheus_query",
@@ -249,7 +222,7 @@ func TestConvertTargetWithPrometheusTarget(t *testing.T) {
 		RefID:        "A",
 	}
 
-	convertedTarget := converter.convertTarget(target, false, 0, "")
+	convertedTarget := converter.convertTarget(target, 0)
 
 	req.NotNil(convertedTarget)
 	req.Equal("prometheus_query", convertedTarget.Expression)
@@ -263,7 +236,7 @@ func TestConvertTagAnnotationIgnoresBuiltIn(t *testing.T) {
 	annotation := sdk.Annotation{Name: "Annotations & Alerts"}
 	dashboard := &v1alpha1.DashboardSpec{}
 
-	NewJSON(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
+	NewConverter(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
 
 	req.Len(dashboard.Annotations, 0)
 }
@@ -274,7 +247,7 @@ func TestConvertTagAnnotationIgnoresUnknownTypes(t *testing.T) {
 	annotation := sdk.Annotation{Name: "Will be ignored", Type: "dashboard"}
 	dashboard := &v1alpha1.DashboardSpec{}
 
-	NewJSON(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
+	NewConverter(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
 
 	req.Len(dashboard.Annotations, 0)
 }
@@ -282,7 +255,7 @@ func TestConvertTagAnnotationIgnoresUnknownTypes(t *testing.T) {
 func TestConvertTagAnnotation(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	datasource := "-- Grafana --"
 	annotation := sdk.Annotation{
@@ -306,7 +279,7 @@ func TestConvertTagAnnotation(t *testing.T) {
 func TestConvertLegend(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	rawLegend := sdk.Legend{
 		AlignAsTable: true,
@@ -331,7 +304,7 @@ func TestConvertLegend(t *testing.T) {
 
 func TestConvertCanHideLegend(t *testing.T) {
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 
 	legend := converter.convertLegend(sdk.Legend{Show: false})
 	req.ElementsMatch([]string{"hide"}, legend)
@@ -339,7 +312,7 @@ func TestConvertCanHideLegend(t *testing.T) {
 
 func TestConvertPanelsAreEmpty(t *testing.T) {
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	var dashboard *v1alpha1.DashboardSpec
 	var panels []*sdk.Panel
 	converter.convertPanels(panels, dashboard, false)
@@ -366,7 +339,7 @@ func TestConvertBarGaugePanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].Targets[0].Datasource, "a bar guage datasource")
@@ -392,7 +365,7 @@ func TestConvertGraphPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].Targets[0].Datasource, "a graph datasource")
@@ -418,7 +391,7 @@ func TestConvertSinglestatPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].Targets[0].Datasource, "a single stat datasource")
@@ -444,7 +417,7 @@ func TestConvertTablePanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].Targets[0].Datasource, "a table datasource")
@@ -467,21 +440,21 @@ func TestConvertTextPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewJSON(zap.NewNop())
+	converter := NewConverter(zap.NewNop())
 	dashboard := &v1alpha1.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].Markdown, "a markdown content for test")
 }
 
-func TestTransferExpr(t *testing.T) {
+func TestConvertExpr(t *testing.T) {
 	req := require.New(t)
 	testCase := []string{
 		"sum (elasticsearch_jvm_memory_used_bytes{cluster=\"$cluster\",name=~\"$name\"}) / sum (elasticsearch_jvm_memory_max_bytes{cluster=\"$cluster\",name=~\"$name\"}) * 100",
 		"elasticsearch_cluster_health_number_of_pending_tasks{cluster=\"$cluster\"}",
 	}
-	newExpr := transferExpr(testCase[0], false, "")
-	req.Equal(newExpr, "sum by(cluster,name)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster,name)  (elasticsearch_jvm_memory_max_bytes) * 100")
-	newExpr2 := transferExpr(testCase[1], false, "")
+	newExpr := convertExpr(testCase[0])
+	req.Equal(newExpr, "sum (elasticsearch_jvm_memory_used_bytes) / sum (elasticsearch_jvm_memory_max_bytes) * 100")
+	newExpr2 := convertExpr(testCase[1])
 	req.Equal(newExpr2, "elasticsearch_cluster_health_number_of_pending_tasks")
 }
 

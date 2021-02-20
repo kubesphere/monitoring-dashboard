@@ -15,16 +15,16 @@ import (
 	"kubesphere.io/monitoring-dashboard/tools/converter"
 )
 
-// a converter struct
-type Transfer struct {
-	// target paths that the converter takes jobs to transfer
-	TargetPaths []string
+// a converter container
+type ConverterContainer struct {
+	// target paths that the converter takes jobs to Converter
+	Inputs []string
 	// inner useful json filepaths to parse
-	Paths []string
+	JsonFilePaths []string
 	// default: "json";  a suffix string for json path
-	EndSuffix string
+	Suffix string
 	// output path for target manifests
-	OutputPath string
+	Output string
 }
 
 var inputPath string
@@ -47,14 +47,8 @@ func main() {
 	// parse the params
 	flag.Parse()
 
-	// init a transfer struct
-	transfer := Transfer{
-		TargetPaths: []string{inputPath},
-		Paths:       make([]string, 0),
-		EndSuffix:   "json",
-		OutputPath:  outputPath,
-	}
-
+	// init a Converter Container
+	c := NewConverterContainer(inputPath)
 	// fills with a logger
 	logger, err := createLogger()
 	if err != nil {
@@ -63,12 +57,12 @@ func main() {
 	}
 
 	// finds json files from the given input path
-	for _, jsonPath := range transfer.TargetPaths {
-		transfer.FindJson(jsonPath)
+	for _, jsonPath := range c.Inputs {
+		c.getJsonFiles(jsonPath)
 	}
 
 	// exits if it could not get a json file
-	if len(transfer.Paths) == 0 {
+	if len(c.JsonFilePaths) == 0 {
 		fmt.Fprintf(os.Stderr, "Could not get a json file: %s\n", err)
 		os.Exit(1)
 	}
@@ -77,10 +71,10 @@ func main() {
 	// once compeleted, each manifest will fill in the target path
 	var wg sync.WaitGroup
 
-	for _, fi := range transfer.Paths {
+	for _, fi := range c.JsonFilePaths {
 		wg.Add(1)
 		go func(inputFile string, logger *zap.Logger) {
-			transfer.TransferToMainfest(inputFile, logger, isClusterCrd, namespace, name)
+			c.toKubesphereDashboard(inputFile, logger, isClusterCrd, namespace, name)
 			wg.Done()
 		}(fi, logger)
 	}
@@ -90,18 +84,22 @@ func main() {
 
 }
 
-// new a converter struct pointer
-func NewTransfer(paths ...string) (*Transfer, error) {
-	if len(paths) <= 0 {
-		paths = append(paths, ".")
+// new a Converter Container struct pointer by a list of inputs
+func NewConverterContainer(inputs ...string) *ConverterContainer {
+	if len(inputs) <= 0 {
+		inputs = append(inputs, ".")
 	}
 
-	return &Transfer{TargetPaths: paths}, nil
+	return &ConverterContainer{
+		Inputs:        inputs,
+		Suffix:        "json",
+		JsonFilePaths: make([]string, 0),
+		Output:        outputPath,
+	}
 }
 
 func createLogger() (*zap.Logger, error) {
 	encoderCfg := zap.NewProductionEncoderConfig()
-	encoderCfg.EncodeTime = zapcore.RFC3339TimeEncoder
 	encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
 	cfg := zap.Config{
@@ -122,18 +120,20 @@ func createLogger() (*zap.Logger, error) {
 }
 
 // find out all json paths under the given path
-func (t *Transfer) FindJson(dirPath string) error {
+func (c *ConverterContainer) getJsonFiles(dirPath string) error {
 
-	UpEndSuffix := strings.ToUpper(t.EndSuffix)
-	// gets a file
+	UpperSuffix := strings.ToUpper(c.Suffix)
+
+	// termination conditions
 	_, err := ioutil.ReadFile(dirPath)
 	if err == nil {
 		// needs to confirm whether was a json file
-		if confirmJson(name, t.EndSuffix, UpEndSuffix) {
-			t.Paths = append(t.Paths, dirPath)
+		if isJsonFile(name, c.Suffix, UpperSuffix) {
+			c.JsonFilePaths = append(c.JsonFilePaths, dirPath)
 			return nil
 		}
 	}
+
 	dir, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		return errors.New("not a dir")
@@ -145,11 +145,11 @@ func (t *Transfer) FindJson(dirPath string) error {
 		name := f.Name()
 		fString := strings.Join([]string{dirPath, name}, pthSep)
 		if f.IsDir() {
-			t.FindJson(fString)
+			c.getJsonFiles(fString)
 		} else {
-			ok := confirmJson(name, t.EndSuffix, UpEndSuffix)
+			ok := isJsonFile(name, c.Suffix, UpperSuffix)
 			if ok {
-				t.Paths = append(t.Paths, fString)
+				c.JsonFilePaths = append(c.JsonFilePaths, fString)
 			}
 		}
 
@@ -159,14 +159,13 @@ func (t *Transfer) FindJson(dirPath string) error {
 
 }
 
-// transfers a json file to a k8s manifest
-func (t *Transfer) TransferToMainfest(inputFile string, logger *zap.Logger, isClusterCrd bool, ns string, name string) {
+// ConverterContainers a json file to a k8s manifest
+func (c *ConverterContainer) toKubesphereDashboard(inputFile string, logger *zap.Logger, isClusterCrd bool, ns string, name string) {
 	input, err := os.Open(inputFile)
 	if err != nil {
 		logger.Fatal("Could not open input file", zap.Error(err))
 	}
 
-	// generates a yaml filename, then creates it
 	_, fileName := filepath.Split(inputFile)
 	prevFileName := strings.Split(fileName, ".")[0]
 
@@ -174,32 +173,28 @@ func (t *Transfer) TransferToMainfest(inputFile string, logger *zap.Logger, isCl
 		ns = "default"
 	}
 
-	// if isClusterCrd {
-	// 	prevFileName = prevFileName + "-cluster"
-	// }
-
 	// inner name
 	if name == "" {
 		name = strings.Replace(prevFileName, "_", "-", -1)
 	}
 
-	outputFile := filepath.Join(t.OutputPath, prevFileName+".yaml")
+	outputFile := filepath.Join(c.Output, prevFileName+".yaml")
 	output, err := os.OpenFile(outputFile, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0755)
 	if err != nil {
 		logger.Fatal("Could not open output file", zap.Error(err))
 	}
 
-	conv := converter.NewJSON(logger)
+	conv := converter.NewConverter(logger)
 
-	if err := conv.ToK8SManifest(input, output, isClusterCrd, ns, name); err != nil {
+	if err := conv.ConvertKubsphereDashboard(input, output, isClusterCrd, ns, name); err != nil {
 		logger.Fatal("Could not convert dashboard", zap.Error(err))
 	}
 
-	logger.Info("Successfully transfer a input json file to a manifest", zap.Any("srcPath", inputFile), zap.Any("targetPath", outputFile))
+	logger.Info("Successfully convert a input json file to a manifest", zap.Any("srcPath", inputFile), zap.Any("targetPath", outputFile))
 
 }
 
-//confirms it was a json file
-func confirmJson(name string, endSuffix string, upEndSuffix string) bool {
-	return strings.HasSuffix(name, endSuffix) || strings.HasSuffix(name, upEndSuffix)
+// confirms it was a json file
+func isJsonFile(name string, suffix string, upSuffix string) bool {
+	return strings.HasSuffix(name, suffix) || strings.HasSuffix(name, upSuffix)
 }

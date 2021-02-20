@@ -93,7 +93,7 @@ spec:
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
-      expr: sum by(cluster)  (elasticsearch_jvm_memory_used_bytes) / sum by(cluster)  (elasticsearch_jvm_memory_max_bytes)
+      expr: sum (elasticsearch_jvm_memory_used_bytes) / sum (elasticsearch_jvm_memory_max_bytes)
         * 100
       step: 1m
       intervalFactor: 2
@@ -186,7 +186,7 @@ spec:
     datasource: ${DS_PROMETHEUS}
     targets:
     - refId: 1
-      expr: sum by(cluster)  (elasticsearch_process_open_files_count)
+      expr: sum (elasticsearch_process_open_files_count)
       step: 1m
       intervalFactor: 2
       instant: true

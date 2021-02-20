@@ -11,11 +11,20 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+IS_CLUSTER_CRD ?= false
+NAMESPACE ?= default
+INPUT ?= ./manifests/inputs
+OUTPUT ?= ./manifests/outputs
+
 all: manager
 
 # Run tests
 test: generate fmt vet manifests
 	go test ./... -coverprofile cover.out
+
+# Run convert
+convert: generate fmt vet manifests
+	go run ./cmd/converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT)
 
 # Build manager binary
 manager: generate fmt vet

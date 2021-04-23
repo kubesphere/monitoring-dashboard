@@ -16,7 +16,10 @@ func TestDashboardSpecSerde(t *testing.T) {
 		{
 			"id": 1,
 			"title": "Current QPS",
-			"type": "singlestat"			
+			"type": "singlestat",
+			"targets": [{
+				"expr": "vector(1)"
+			}]
 		},
 		{
 			"id": 2,
@@ -26,7 +29,10 @@ func TestDashboardSpecSerde(t *testing.T) {
 		{
 			"id": 3,
 			"title": "Connections",
-			"type": "graph"
+			"type": "graph",
+			"targets": [{
+				"expr": "vector(1)"
+			}]
 		}
 	],
 	"title": "MySQL Overview"
@@ -36,23 +42,29 @@ func TestDashboardSpecSerde(t *testing.T) {
 		Title:      "MySQL Overview",
 		DataSource: "prometheus",
 		Panels: []Panel{{
-			SingleStat: &panels.SingleStat{
+			PanelMeta: PanelMeta{
 				Id:    1,
 				Type:  "singlestat",
 				Title: "Current QPS",
 			},
+			Targets: []panels.Target{{
+				Expression: "vector(1)",
+			}},
 		}, {
-			Row: &panels.Row{
+			PanelMeta: PanelMeta{
 				Id:    2,
 				Title: "Connections and Threads",
 				Type:  "row",
 			},
 		}, {
-			Graph: &panels.Graph{
+			PanelMeta: PanelMeta{
 				Id:    3,
 				Title: "Connections",
 				Type:  "graph",
 			},
+			Targets: []panels.Target{{
+				Expression: "vector(1)",
+			}},
 		}},
 	}
 

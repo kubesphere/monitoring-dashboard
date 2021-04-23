@@ -46,10 +46,11 @@ spec:
                 description: Collection of panels. Panel is one of [Row](row.md),
                   [Singlestat](#singlestat.md) or [Graph](graph.md)
                 items:
-                  description: Supported panel type
+                  description: Supported panel
                   properties:
                     bars:
-                      description: Display as a bar chart
+                      description: A collection of queries Targets []Target `json:"targets,omitempty"`
+                        Display as a bar chart
                       type: boolean
                     colors:
                       description: Set series color
@@ -57,11 +58,16 @@ spec:
                         type: string
                       type: array
                     decimals:
-                      description: Limit the decimal numbers
+                      description: Name of the signlestat panel Title string `json:"title,omitempty"`
+                        Must be `singlestat` Type string `json:"type"` Panel ID Id
+                        int64 `json:"id,omitempty"` A collection of queries Targets
+                        []Target `json:"targets,omitempty"` Limit the decimal numbers
                       format: int64
                       type: integer
                     description:
-                      description: Panel description
+                      description: Name of the graph panel Title string `json:"title,omitempty"`
+                        Must be `graph` Type string `json:"type"` Panel ID Id int64
+                        `json:"id,omitempty"` Panel description
                       type: string
                     format:
                       description: Display unit
@@ -77,50 +83,32 @@ spec:
                       description: Display as a stacked chart
                       type: boolean
                     targets:
-                      allOf:
-                      - items:
-                          description: Query editor options
-                          properties:
-                            expr:
-                              description: Input for fetching metrics.
-                              type: string
-                            legendFormat:
-                              description: Legend format for outputs. You can make
-                                a dynamic legend with templating variables.
-                              type: string
-                            refId:
-                              description: Reference ID
-                              format: int64
-                              type: integer
-                            step:
-                              description: Set series time interval
-                              type: string
-                          type: object
-                      - items:
-                          description: Query editor options
-                          properties:
-                            expr:
-                              description: Input for fetching metrics.
-                              type: string
-                            legendFormat:
-                              description: Legend format for outputs. You can make
-                                a dynamic legend with templating variables.
-                              type: string
-                            refId:
-                              description: Reference ID
-                              format: int64
-                              type: integer
-                            step:
-                              description: Set series time interval
-                              type: string
-                          type: object
-                      description: A collection of queries
+                      description: A collection of queries Only for panels with `graph`
+                        or `singlestat` type
+                      items:
+                        description: Query editor options
+                        properties:
+                          expr:
+                            description: Input for fetching metrics.
+                            type: string
+                          legendFormat:
+                            description: Legend format for outputs. You can make a
+                              dynamic legend with templating variables.
+                            type: string
+                          refId:
+                            description: Reference ID
+                            format: int64
+                            type: integer
+                          step:
+                            description: Set series time interval
+                            type: string
+                        type: object
                       type: array
                     title:
-                      description: Name of the row panel
+                      description: Name of the panel
                       type: string
                     type:
-                      description: Must be `row`
+                      description: Panel Type, one of `row`, `graph`, `singlestat`
                       type: string
                     yaxes:
                       description: Y-axis options

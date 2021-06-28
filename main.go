@@ -27,6 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	monitoringv1alpha1 "kubesphere.io/monitoring-dashboard/api/v1alpha1"
+	monitoringv1alpha2 "kubesphere.io/monitoring-dashboard/api/v1alpha2"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -39,6 +40,7 @@ func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
 	_ = monitoringv1alpha1.AddToScheme(scheme)
+	_ = monitoringv1alpha2.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 

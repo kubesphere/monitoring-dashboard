@@ -74,7 +74,7 @@ func main() {
 	for _, fi := range c.JsonFilePaths {
 		wg.Add(1)
 		go func(inputFile string, logger *zap.Logger) {
-			c.toKubesphereDashboard(inputFile, logger, isClusterCrd, namespace, name)
+			c.toKubesphereDashboardFile(inputFile, logger, isClusterCrd, namespace, name)
 			wg.Done()
 		}(fi, logger)
 	}
@@ -159,8 +159,8 @@ func (c *ConverterContainer) getJsonFiles(dirPath string) error {
 
 }
 
-// ConverterContainers a json file to a k8s manifest
-func (c *ConverterContainer) toKubesphereDashboard(inputFile string, logger *zap.Logger, isClusterCrd bool, ns string, name string) {
+// Convert a json file to a k8s manifest
+func (c *ConverterContainer) toKubesphereDashboardFile(inputFile string, logger *zap.Logger, isClusterCrd bool, ns string, name string) {
 	input, err := os.Open(inputFile)
 	if err != nil {
 		logger.Fatal("Could not open input file", zap.Error(err))
@@ -186,7 +186,7 @@ func (c *ConverterContainer) toKubesphereDashboard(inputFile string, logger *zap
 
 	conv := converter.NewConverter(logger)
 
-	if err := conv.ConvertKubsphereDashboard(input, output, isClusterCrd, ns, name); err != nil {
+	if err := conv.ConvertToKubsphereDashboardManifests(input, output, isClusterCrd, ns, name); err != nil {
 		logger.Fatal("Could not convert dashboard", zap.Error(err))
 	}
 

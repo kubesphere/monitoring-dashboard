@@ -4,7 +4,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.5.0
+    controller-gen.kubebuilder.io/version: v0.6.1
   creationTimestamp: null
   name: clusterdashboards.monitoring.kubesphere.io
 spec:
@@ -17,6 +17,153 @@ spec:
   scope: Cluster
   versions:
   - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterDashboard is the Schema for the culsterdashboards API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DashboardSpec defines the desired state of Dashboard
+            properties:
+              datasource:
+                description: Dashboard datasource
+                type: string
+              description:
+                description: Dashboard description
+                type: string
+              panels:
+                description: Collection of panels. Panel is one of [Row](row.md),
+                  [Singlestat](#singlestat.md) or [Graph](graph.md)
+                items:
+                  description: Supported panel
+                  properties:
+                    bars:
+                      description: A collection of queries Targets []Target `json:"targets,omitempty"`
+                        Display as a bar chart
+                      type: boolean
+                    colors:
+                      description: Set series color
+                      items:
+                        type: string
+                      type: array
+                    decimals:
+                      description: Name of the signlestat panel Title string `json:"title,omitempty"`
+                        Must be `singlestat` Type string `json:"type"` Panel ID Id
+                        int64 `json:"id,omitempty"` A collection of queries Targets
+                        []Target `json:"targets,omitempty"` Limit the decimal numbers
+                      format: int64
+                      type: integer
+                    description:
+                      description: Name of the graph panel Title string `json:"title,omitempty"`
+                        Must be `graph` Type string `json:"type"` Panel ID Id int64
+                        `json:"id,omitempty"` Panel description
+                      type: string
+                    format:
+                      description: Display unit
+                      type: string
+                    id:
+                      description: Panel ID
+                      format: int64
+                      type: integer
+                    lines:
+                      description: Display as a line chart
+                      type: boolean
+                    stack:
+                      description: Display as a stacked chart
+                      type: boolean
+                    targets:
+                      description: A collection of queries Only for panels with `graph`
+                        or `singlestat` type
+                      items:
+                        description: Query editor options
+                        properties:
+                          expr:
+                            description: Input for fetching metrics.
+                            type: string
+                          legendFormat:
+                            description: Legend format for outputs. You can make a
+                              dynamic legend with templating variables.
+                            type: string
+                          refId:
+                            description: Reference ID
+                            format: int64
+                            type: integer
+                          step:
+                            description: Set series time interval
+                            type: string
+                        type: object
+                      type: array
+                    title:
+                      description: Name of the panel
+                      type: string
+                    type:
+                      description: Panel Type, one of `row`, `graph`, `singlestat`
+                      type: string
+                    yaxes:
+                      description: Y-axis options
+                      items:
+                        properties:
+                          decimals:
+                            description: Limit the decimal numbers
+                            format: int64
+                            type: integer
+                          format:
+                            description: Display unit
+                            type: string
+                        type: object
+                      type: array
+                  required:
+                  - type
+                  type: object
+                type: array
+              templating:
+                description: Templating variables
+                items:
+                  description: Templating defines a variable, which can be used as
+                    a placeholder in query
+                  properties:
+                    name:
+                      description: Variable name
+                      type: string
+                    query:
+                      description: Set variable values to be the return result of
+                        the query
+                      type: string
+                  type: object
+                type: array
+              time:
+                description: Time range for display
+                properties:
+                  from:
+                    description: Start time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
+                      eg. `now-1M`. It denotes the end time is set to the last month
+                      since now.
+                    type: string
+                  to:
+                    description: End time in the format of `^now([+-][0-9]+[smhdwMy])?$`,
+                      eg. `now-1M`. It denotes the start time is set to the last month
+                      since now.
+                    type: string
+                type: object
+              title:
+                description: Dashboard title
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: false
+  - name: v1alpha2
     schema:
       openAPIV3Schema:
         description: ClusterDashboard is the Schema for the culsterdashboards API
@@ -80,36 +227,33 @@ spec:
                 type: array
               auto_refresh:
                 type: string
-              dataSource:
+              description:
                 type: string
               editable:
                 type: boolean
+              id:
+                type: integer
               panels:
                 items:
-                  description: Supported panel type
                   properties:
                     bars:
                       description: Display as a bar chart
                       type: boolean
-                    color:
-                      description: color settings todo graph
-                      items:
-                        type: string
-                      type: array
                     colors:
                       description: Set series color
                       items:
                         type: string
                       type: array
+                    content:
+                      type: string
                     datasource:
-                      description: datasource
+                      description: Datasource
                       type: string
                     decimals:
-                      description: Limit the decimal numbers
                       format: int64
                       type: integer
                     description:
-                      description: Panel description
+                      description: Description
                       type: string
                     format:
                       description: Display unit
@@ -131,14 +275,7 @@ spec:
                           type: boolean
                       type: object
                     height:
-                      description: height
-                      type: string
-                    hidden_columns:
-                      items:
-                        type: string
-                      type: array
-                    html:
-                      description: private properties of text panel
+                      description: Height
                       type: string
                     id:
                       description: Panel ID
@@ -152,10 +289,9 @@ spec:
                     lines:
                       description: Display as a line chart
                       type: boolean
-                    markdown:
+                    mode:
                       type: string
                     options:
-                      description: private property of the bargauge panel
                       properties:
                         colorMode:
                           type: string
@@ -174,9 +310,17 @@ spec:
                         textMode:
                           type: string
                       type: object
+                    scroll:
+                      type: boolean
+                    sort:
+                      properties:
+                        col:
+                          type: integer
+                        desc:
+                          type: boolean
+                      type: object
                     sparkline:
-                      description: 'private properties of singlestat panel spark line:
-                        full or bottom'
+                      description: 'spark line: full or bottom'
                       type: string
                     stack:
                       description: Display as a stacked chart
@@ -186,31 +330,16 @@ spec:
                       items:
                         description: Query editor options Referers to https://pkg.go.dev/github.com/grafana-tools/sdk#Target
                         properties:
-                          datasource:
-                            description: Set a datasource
-                            type: string
                           expr:
                             description: 'only support prometheus,and the corresponding
                               fields are as follows: Input for fetching metrics.'
                             type: string
-                          format:
-                            type: string
-                          hide:
-                            description: 'hide: bool'
-                            type: boolean
-                          instant:
-                            type: boolean
-                          interval:
-                            type: string
-                          intervalFactor:
-                            description: extra fields
-                            type: integer
                           legendFormat:
                             description: Legend format for outputs. You can make a
                               dynamic legend with templating variables.
                             type: string
                           refId:
-                            description: common fields Reference ID
+                            description: Reference ID
                             format: int64
                             type: integer
                           step:
@@ -218,24 +347,27 @@ spec:
                             type: string
                         type: object
                       type: array
-                    time_series_aggregations:
-                      items:
-                        type: string
-                      type: array
                     title:
-                      description: '****common properties start Name pf the panel'
+                      description: Name of the  panel
                       type: string
-                    transparent:
-                      description: transparent
-                      type: boolean
                     type:
-                      description: The type of the panel
+                      description: Type of the  panel
                       type: string
                     valueName:
                       description: value name
                       type: string
+                    xaxis:
+                      properties:
+                        decimals:
+                          description: Limit the decimal numbers
+                          format: int64
+                          type: integer
+                        format:
+                          description: Display unit
+                          type: string
+                      type: object
                     yaxes:
-                      description: private property of graph panel Y-axis options
+                      description: Y-axis options
                       items:
                         properties:
                           decimals:
@@ -245,8 +377,6 @@ spec:
                           format:
                             description: Display unit
                             type: string
-                        required:
-                        - decimals
                         type: object
                       type: array
                   type: object
@@ -315,7 +445,8 @@ spec:
               timezone:
                 type: string
               title:
-                description: common fields
+                type: string
+              uid:
                 type: string
             type: object
         type: object

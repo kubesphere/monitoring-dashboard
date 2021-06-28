@@ -8,26 +8,28 @@ import (
 	"regexp"
 	"strconv"
 
+	yamlConverter "github.com/ghodss/yaml"
 	"github.com/grafana-tools/sdk"
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
-	v1alpha1 "kubesphere.io/monitoring-dashboard/api/v1alpha1"
-	ansModel "kubesphere.io/monitoring-dashboard/api/v1alpha1/annotations"
-	panelsModel "kubesphere.io/monitoring-dashboard/api/v1alpha1/panels"
-	templatingsModel "kubesphere.io/monitoring-dashboard/api/v1alpha1/templatings"
+	v1alpha2 "kubesphere.io/monitoring-dashboard/api/v1alpha2"
+	ansModel "kubesphere.io/monitoring-dashboard/api/v1alpha2/annotations"
+	panelsModel "kubesphere.io/monitoring-dashboard/api/v1alpha2/panels"
+	templatingsModel "kubesphere.io/monitoring-dashboard/api/v1alpha2/templatings"
 )
 
 type k8sDashboard struct {
 	APIVersion string                  `json:"apiVersion" yaml:"apiVersion"`
 	Kind       string                  `json:"kind" yaml:"kind"`
 	Metadata   map[string]string       `json:"metadata" yaml:"metadata"`
-	Spec       *v1alpha1.DashboardSpec `json:"spec" yaml:"spec"`
+	Spec       *v1alpha2.DashboardSpec `json:"spec" yaml:"spec"`
 }
 
 // Converter struct: this struct has a log property, so other newly added methods can access this log
 type Converter struct {
-	logger *zap.Logger
+	logger     *zap.Logger
+	OutputJson []byte
+	OutputYaml []byte
 }
 
 // NewConverter: new a Converter struct object with a logger object
@@ -37,15 +39,16 @@ func NewConverter(logger *zap.Logger) *Converter {
 	}
 }
 
-// ConvertKubsphereDashboard: this method converts to a k8s mainfest file
-func (converter *Converter) ConvertKubsphereDashboard(input io.Reader, output io.Writer, isClusterCrd bool, ns string, name string) error {
-	dashboard, err := converter.convert(input, isClusterCrd)
+// ConvertKubsphereDashboardFromJson: this method converts the input json content to a bytes content
+func (converter *Converter) ConvertFromJson(content []byte, isClusterCrd bool, ns string, name string) error {
+	// convert to a dashboard
+	dashboard, err := converter.convert(content, isClusterCrd)
 	if err != nil {
 		converter.logger.Error("could parse input", zap.Error(err))
 		return err
 	}
 
-	apiVersion := v1alpha1.GroupVersion.Group + "/" + v1alpha1.GroupVersion.Version
+	apiVersion := v1alpha2.GroupVersion.Group + "/" + v1alpha2.GroupVersion.Version
 
 	kind := "Dashboard"
 	if isClusterCrd {
@@ -68,24 +71,58 @@ func (converter *Converter) ConvertKubsphereDashboard(input io.Reader, output io
 		Spec:       dashboard,
 	}
 
-	converted, err := yaml.Marshal(manifest)
+	convertedJson, err := json.Marshal(manifest)
 	if err != nil {
-		converter.logger.Error("could marshall dashboard to yaml", zap.Error(err))
+		converter.logger.Error("could not marshal dashboard to yaml", zap.Error(err))
 		return err
 	}
 
-	_, err = output.Write(converted)
+	converter.OutputJson = convertedJson
 
-	return err
+	convertedYaml, err := yamlConverter.JSONToYAML(convertedJson)
+	if err != nil {
+		converter.logger.Error("could not convert json to yaml", zap.Error(err))
+		return err
+	}
+
+	converter.OutputYaml = convertedYaml
+
+	return nil
 }
 
-// convert: this method reads a input Converter file, then extract needed fields to the yaml model
-func (converter *Converter) convert(input io.Reader, isClusterCrd bool) (*v1alpha1.DashboardSpec, error) {
+// ConvertKubsphereDashboardFromFile: this method converts the input json file to a bytes content
+func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, ns string, name string) error {
 	content, err := ioutil.ReadAll(input)
 	if err != nil {
 		converter.logger.Error("could not read input", zap.Error(err))
-		return nil, err
+		return err
 	}
+
+	err = converter.ConvertFromJson(content, isClusterCrd, ns, name)
+	if err != nil {
+		converter.logger.Error("could not convert from input", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
+// ConvertKubsphereDashboardManifests: this method converts to a k8s mainfest file
+func (converter *Converter) ConvertToKubsphereDashboardManifests(input io.Reader, output io.Writer, isClusterCrd bool, ns string, name string) error {
+
+	err := converter.ConvertFromFile(input, isClusterCrd, ns, name)
+	if err != nil {
+		return err
+	}
+	_, err = output.Write([]byte(converter.OutputYaml))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// convert: this method reads a input Converter file, then extract needed fields to the yaml model
+func (converter *Converter) convert(content []byte, isClusterCrd bool) (*v1alpha2.DashboardSpec, error) {
 
 	board := &sdk.Board{}
 	if err := json.Unmarshal(content, board); err != nil {
@@ -94,7 +131,7 @@ func (converter *Converter) convert(input io.Reader, isClusterCrd bool) (*v1alph
 	}
 
 	// a yaml model
-	dashboard := &v1alpha1.DashboardSpec{}
+	dashboard := &v1alpha2.DashboardSpec{}
 
 	// starts to convert general settings
 	converter.convertGeneralSettings(board, dashboard)
@@ -112,7 +149,7 @@ func (converter *Converter) convert(input io.Reader, isClusterCrd bool) (*v1alph
 }
 
 // convert GeneralSettings
-func (converter *Converter) convertGeneralSettings(board *sdk.Board, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertGeneralSettings(board *sdk.Board, dashboard *v1alpha2.DashboardSpec) {
 	dashboard.Title = board.Title
 	dashboard.Editable = board.Editable
 	dashboard.SharedCrosshair = board.SharedCrosshair
@@ -127,7 +164,7 @@ func (converter *Converter) convertGeneralSettings(board *sdk.Board, dashboard *
 }
 
 // convert Annotations
-func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, dashboard *v1alpha2.DashboardSpec) {
 	for _, annotation := range annotations {
 		// grafana-sdk doesn't expose the "builtIn" field, so we work around that by skipping
 		// the annotation we know to be built-in by its name
@@ -168,7 +205,7 @@ func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, das
 }
 
 // convert diferent variables
-func (converter *Converter) convertVariables(variables []sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertVariables(variables []sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	for _, variable := range variables {
 		switch variable.Type {
 		case "interval":
@@ -188,7 +225,7 @@ func (converter *Converter) convertVariables(variables []sdk.TemplateVar, dashbo
 }
 
 // convert interval variables
-func (converter *Converter) convertIntervalVar(variable sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertIntervalVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	interval := templatingsModel.TemplateVar{
 		Name:    variable.Name,
 		Type:    variable.Type,
@@ -205,7 +242,7 @@ func (converter *Converter) convertIntervalVar(variable sdk.TemplateVar, dashboa
 }
 
 // convert custom variables
-func (converter *Converter) convertCustomVar(variable sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertCustomVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	custom := templatingsModel.TemplateVar{
 		Name:       variable.Name,
 		Label:      variable.Label,
@@ -224,10 +261,14 @@ func (converter *Converter) convertCustomVar(variable sdk.TemplateVar, dashboard
 }
 
 // convert query variables
-func (converter *Converter) convertQueryVar(variable sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertQueryVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	datasource := ""
 	if variable.Datasource != nil {
 		datasource = *variable.Datasource
+	}
+	var q string
+	if variable.Query != nil {
+		q = variable.Query.(string)
 	}
 
 	query := templatingsModel.TemplateVar{
@@ -235,7 +276,7 @@ func (converter *Converter) convertQueryVar(variable sdk.TemplateVar, dashboard 
 		Label:      variable.Label,
 		Type:       variable.Type,
 		Datasource: datasource,
-		Request:    variable.Query,
+		Request:    q,
 		Regex:      variable.Regex,
 		IncludeAll: variable.IncludeAll,
 		DefaultAll: variable.Current.Value == "$__all",
@@ -246,12 +287,11 @@ func (converter *Converter) convertQueryVar(variable sdk.TemplateVar, dashboard 
 }
 
 // convert datasource variables
-func (converter *Converter) convertDatasourceVar(variable sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
+func (converter *Converter) convertDatasourceVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	datasource := templatingsModel.TemplateVar{
 		Name:       variable.Name,
 		Label:      variable.Label,
 		Type:       variable.Type,
-		Query:      variable.Query,
 		Regex:      variable.Regex,
 		IncludeAll: variable.IncludeAll,
 	}
@@ -260,8 +300,8 @@ func (converter *Converter) convertDatasourceVar(variable sdk.TemplateVar, dashb
 }
 
 // convert const variables
-func (converter *Converter) convertConstVar(variable sdk.TemplateVar, dashboard *v1alpha1.DashboardSpec) {
-	text, _ := variable.Current.Text.(string)
+func (converter *Converter) convertConstVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
+	text := variable.Current.Value.(string)
 	constant := templatingsModel.TemplateVar{
 		Name:      variable.Name,
 		Label:     variable.Label,
@@ -278,7 +318,7 @@ func (converter *Converter) convertConstVar(variable sdk.TemplateVar, dashboard 
 }
 
 //convert rows
-func (converter *Converter) convertPanels(panels []*sdk.Panel, dashboard *v1alpha1.DashboardSpec, isClusterCrd bool) {
+func (converter *Converter) convertPanels(panels []*sdk.Panel, dashboard *v1alpha2.DashboardSpec, isClusterCrd bool) {
 
 	for _, panel := range panels {
 		if panel.Type == "row" {
@@ -299,7 +339,7 @@ func (converter *Converter) convertPanels(panels []*sdk.Panel, dashboard *v1alph
 }
 
 //convert rows
-func (converter *Converter) convertRows(rows []*sdk.Row, dashboard *v1alpha1.DashboardSpec, isClusterCrd bool) {
+func (converter *Converter) convertRows(rows []*sdk.Row, dashboard *v1alpha2.DashboardSpec, isClusterCrd bool) {
 
 	for _, row := range rows {
 		if row == nil {
@@ -319,14 +359,12 @@ func (converter *Converter) convertRows(rows []*sdk.Row, dashboard *v1alpha1.Das
 }
 
 // convert different types of the given panel
-func (converter *Converter) convertDataPanel(panel sdk.Panel, isClusterCrd bool) (panelsModel.Panel, bool) {
+func (converter *Converter) convertDataPanel(panel sdk.Panel, isClusterCrd bool) (*panelsModel.Panel, bool) {
 	switch panel.Type {
 	case "graph":
 		return converter.convertGraph(panel, isClusterCrd), true
 	case "singlestat":
 		return converter.convertSingleStat(panel, isClusterCrd), true
-	case "gauge":
-		return converter.convertCustom(panel, isClusterCrd), true
 	case "bargauge":
 		return converter.convertBarGauge(panel, isClusterCrd), true
 	case "table":
@@ -334,37 +372,49 @@ func (converter *Converter) convertDataPanel(panel sdk.Panel, isClusterCrd bool)
 	case "text":
 		return converter.convertText(panel), true
 	default:
+		if panel.OfType == sdk.CustomType {
+			return converter.convertCustom(panel, isClusterCrd), true
+		}
 		converter.logger.Warn("unhandled panel type: skipped", zap.String("type", panel.Type), zap.String("title", panel.Title))
 	}
-	return panelsModel.Panel{}, false
+	return &panelsModel.Panel{}, false
 }
 
 // a graph panel
-func (converter *Converter) convertGraph(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
+func (converter *Converter) convertGraph(panel sdk.Panel, isClusterCrd bool) *panelsModel.Panel {
 	// filled with values of the given fields
-	var decimals int64
-	if panel.GraphPanel.Decimals != nil {
-		decimals = int64(*panel.GraphPanel.Decimals)
+	var height *string
+	if panel.Height != nil {
+		var h = panel.Height.(string)
+		height = &h
 	}
 	graph := &panelsModel.Panel{
-		Title:       panel.Title,
-		Type:        panel.Type,
-		Decimals:    decimals,
-		Colors:      defaultColors(),
-		Description: pointToString(panel.CommonPanel.Description),
-		Id:          panelSpan(panel),
-		Bars:        panel.GraphPanel.Bars,
-		Lines:       panel.GraphPanel.Lines,
-		Stack:       panel.GraphPanel.Stack,
-		Legend:      converter.convertLegend(panel.GraphPanel.Legend),
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        panel.Type,
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+			Colors:      defaultColors(),
+		},
 	}
 
-	if panel.Height != nil {
-		graph.Height = pointToString(panel.Height)
+	if panel.GraphPanel == nil {
+		return graph
 	}
 
-	if panel.Datasource != nil {
-		graph.Datasource = *panel.Datasource
+	graph.CommonPanel.Decimals = uintpointToInt64point(panel.GraphPanel.Decimals)
+	graph.CommonPanel.Legend = converter.convertLegend(panel.GraphPanel.Legend)
+
+	graph.GraphPanel = &panelsModel.GraphPanel{
+		Bars:  panel.GraphPanel.Bars,
+		Lines: panel.GraphPanel.Lines,
+		Stack: panel.GraphPanel.Stack,
+		Xaxis: panelsModel.Axis{
+			Format:   panel.GraphPanel.Xaxis.Format,
+			Decimals: int64(panel.GraphPanel.Xaxis.Decimals),
+		},
 	}
 
 	// converts target
@@ -375,27 +425,21 @@ func (converter *Converter) convertGraph(panel sdk.Panel, isClusterCrd bool) pan
 				continue
 			}
 
-			graph.Targets = append(graph.Targets, *graphTarget)
+			graph.CommonPanel.Targets = append(graph.CommonPanel.Targets, *graphTarget)
 		}
 
 	}
 
 	// converts yaxes
 	for _, yaxis := range panel.GraphPanel.Yaxes {
-		d := int64(yaxis.Decimals)
-		if d == 0 {
-			d = 3
-		}
-		f := handleGraphFormat(yaxis.Format)
-		y := &panelsModel.Yaxis{
-			Decimals: d,
-			Format:   f,
-		}
-		graph.Yaxes = append(graph.Yaxes, *y)
+		graph.GraphPanel.Yaxes = append(graph.GraphPanel.Yaxes, panelsModel.Axis{
+			Format:   yaxis.Format,
+			Decimals: int64(yaxis.Decimals),
+		})
 		break
 	}
 
-	return *graph
+	return graph
 }
 
 func (converter *Converter) convertLegend(sdkLegend sdk.Legend) []string {
@@ -436,44 +480,42 @@ func (converter *Converter) convertLegend(sdkLegend sdk.Legend) []string {
 }
 
 // singlestat panel
-func (converter *Converter) convertSingleStat(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
-	singleStat := &panelsModel.Panel{
-		Title:       panel.Title,
-		Id:          panelSpan(panel),
-		Type:        panel.Type,
-		Description: pointToString(panel.CommonPanel.Description),
-		Format:      panel.SinglestatPanel.Format,
-		Decimals:    int64(panel.SinglestatPanel.Decimals),
-		ValueName:   panel.SinglestatPanel.ValueName,
-	}
-
+func (converter *Converter) convertSingleStat(panel sdk.Panel, isClusterCrd bool) *panelsModel.Panel {
+	var height *string
 	if panel.Height != nil {
-		singleStat.Height = *panel.Height
+		var h = panel.Height.(string)
+		height = &h
+	}
+	singleStat := &panelsModel.Panel{
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        panel.Type,
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+		},
 	}
 
-	if panel.Datasource != nil {
-		singleStat.Datasource = *panel.Datasource
+	if panel.SinglestatPanel == nil {
+		return singleStat
+	}
+
+	singleStat.CommonPanel.Format = panel.SinglestatPanel.Format
+	singleStat.CommonPanel.Decimals = intToInt64point(panel.SinglestatPanel.Decimals)
+
+	singleStat.SinglestatPanel = &panelsModel.SinglestatPanel{
+		ValueName: panel.SinglestatPanel.ValueName,
 	}
 
 	if len(panel.SinglestatPanel.Colors) == 3 {
-		singleStat.Colors = []string{
+		singleStat.CommonPanel.Colors = []string{
 			panel.SinglestatPanel.Colors[0],
 			panel.SinglestatPanel.Colors[1],
 			panel.SinglestatPanel.Colors[2],
 		}
 	} else {
-		singleStat.Colors = defaultColors()
-	}
-
-	var colorOpts []string
-	if panel.SinglestatPanel.ColorBackground {
-		colorOpts = append(colorOpts, "background")
-	}
-	if panel.SinglestatPanel.ColorValue {
-		colorOpts = append(colorOpts, "value")
-	}
-	if len(colorOpts) != 0 {
-		singleStat.Color = colorOpts
+		singleStat.CommonPanel.Colors = defaultColors()
 	}
 
 	if panel.SinglestatPanel.SparkLine.Show && panel.SinglestatPanel.SparkLine.Full {
@@ -486,18 +528,18 @@ func (converter *Converter) convertSingleStat(panel sdk.Panel, isClusterCrd bool
 	// handles targets
 	if panel.SinglestatPanel.Targets != nil && len(panel.SinglestatPanel.Targets) > 0 {
 		for index, target := range panel.SinglestatPanel.Targets {
-			graphTarget := converter.convertTarget(target, index)
-			if graphTarget == nil {
+			target := converter.convertTarget(target, index)
+			if target == nil {
 				continue
 			}
 
-			singleStat.Targets = append(singleStat.Targets, *graphTarget)
+			singleStat.CommonPanel.Targets = append(singleStat.CommonPanel.Targets, *target)
 		}
 
 	}
 
 	// handles gauge
-	gauge := &panelsModel.Gauge{
+	singleStat.Gauge = panelsModel.Gauge{
 		MaxValue:         int64(panel.SinglestatPanel.Gauge.MaxValue),
 		MinValue:         int64(panel.SinglestatPanel.Gauge.MinValue),
 		Show:             panel.SinglestatPanel.Gauge.Show,
@@ -505,48 +547,79 @@ func (converter *Converter) convertSingleStat(panel sdk.Panel, isClusterCrd bool
 		ThresholdMarkers: panel.SinglestatPanel.Gauge.ThresholdMarkers,
 	}
 
-	singleStat.Gauge = gauge
-
-	return *singleStat
+	return singleStat
 }
 
 // gauge
-func (converter *Converter) convertCustom(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
+func (converter *Converter) convertCustom(panel sdk.Panel, isClusterCrd bool) *panelsModel.Panel {
 	// set options
+	var height *string
+	if panel.Height != nil {
+		var h = panel.Height.(string)
+		height = &h
+	}
 	customPanel := &panelsModel.Panel{
-		Decimals: 0,
-		Title:    panel.Title,
-		// Type:     panel.Type,
-		Type:        "singlestat",
-		Colors:      defaultColors(),
-		Description: pointToString(panel.CommonPanel.Description),
-		Id:          panelSpan(panel),
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        "singlestat",
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+		},
 	}
 
-	// handles targets
+	if panel.CustomPanel == nil {
+		return customPanel
+	}
+
+	var sdkTargets []sdk.Target
+
 	custom := *panel.CustomPanel
-	if custom == nil {
-		return *customPanel
+
+	if err := mapstructure.Decode(custom["targets"], &sdkTargets); err != nil {
+		return customPanel
 	}
 
-	var targets []sdk.Target
+	var targets []panelsModel.Target
 
-	if err := mapstructure.Decode(custom["targets"], &targets); err != nil {
-		return *customPanel
-	}
-
-	for index, target := range targets {
+	for index, target := range sdkTargets {
 		t := converter.convertTarget(target, index)
-		customPanel.Targets = append(customPanel.Targets, *t)
+		if t == nil {
+			continue
+		}
+		targets = append(targets, *t)
 	}
 
-	return *customPanel
+	customPanel.CommonPanel.Targets = targets
+
+	return customPanel
 }
 
 // bar gauge
-func (converter *Converter) convertBarGauge(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
+func (converter *Converter) convertBarGauge(panel sdk.Panel, isClusterCrd bool) *panelsModel.Panel {
 	// set options
+	var height *string
+	if panel.Height != nil {
+		var h = panel.Height.(string)
+		height = &h
+	}
 	barGaugePanel := &panelsModel.Panel{
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        panel.Type,
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+		},
+	}
+
+	if panel.BarGaugePanel == nil {
+		return barGaugePanel
+	}
+
+	barGaugePanel.BarGaugePanel = &panelsModel.BarGaugePanel{
 		Options: &panelsModel.BarGaugeOptions{
 			Orientation: panel.BarGaugePanel.Options.Orientation,
 			TextMode:    panel.BarGaugePanel.Options.TextMode,
@@ -557,12 +630,6 @@ func (converter *Converter) convertBarGauge(panel sdk.Panel, isClusterCrd bool) 
 			Content:     panel.BarGaugePanel.Options.Content,
 			Mode:        panel.BarGaugePanel.Options.Mode,
 		},
-		Decimals:    0,
-		Title:       panel.Title,
-		Type:        panel.Type,
-		Colors:      defaultColors(),
-		Description: pointToString(panel.CommonPanel.Description),
-		Id:          panelSpan(panel),
 	}
 
 	// handles targets
@@ -573,32 +640,38 @@ func (converter *Converter) convertBarGauge(panel sdk.Panel, isClusterCrd bool) 
 				continue
 			}
 
-			barGaugePanel.Targets = append(barGaugePanel.Targets, *barGaugeTarget)
+			barGaugePanel.CommonPanel.Targets = append(barGaugePanel.CommonPanel.Targets, *barGaugeTarget)
 		}
 
 	}
 
-	return *barGaugePanel
+	return barGaugePanel
 }
 
 // converts a table panel
-func (converter *Converter) convertTable(panel sdk.Panel, isClusterCrd bool) panelsModel.Panel {
-	tablePanel := &panelsModel.Panel{
-		Title:       panel.Title,
-		Id:          panelSpan(panel),
-		Type:        panel.Type,
-		Colors:      defaultColors(),
-		Description: pointToString(panel.CommonPanel.Description),
-		Transparent: panel.Transparent,
-		Decimals:    0,
-	}
-
+func (converter *Converter) convertTable(panel sdk.Panel, isClusterCrd bool) *panelsModel.Panel {
+	var height *string
 	if panel.Height != nil {
-		tablePanel.Height = *panel.Height
+		var h = panel.Height.(string)
+		height = &h
+	}
+	tablePanel := &panelsModel.Panel{
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        panel.Type,
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+		},
 	}
 
-	if panel.Datasource != nil {
-		tablePanel.Datasource = *panel.Datasource
+	if panel.TablePanel == nil {
+		return tablePanel
+	}
+
+	tablePanel.TablePanel = &panelsModel.TablePanel{
+		Scroll: panel.TablePanel.Scroll,
 	}
 
 	if panel.TablePanel.Targets != nil && len(panel.TablePanel.Targets) > 0 {
@@ -608,44 +681,49 @@ func (converter *Converter) convertTable(panel sdk.Panel, isClusterCrd bool) pan
 				continue
 			}
 
-			tablePanel.Targets = append(tablePanel.Targets, *graphTarget)
+			tablePanel.CommonPanel.Targets = append(tablePanel.CommonPanel.Targets, *graphTarget)
 		}
 	}
 
-	// hidden columns
-	for _, columnStyle := range panel.TablePanel.Styles {
-		if columnStyle.Type != "hidden" {
-			continue
+	if panel.TablePanel.Sort != nil {
+		tablePanel.TablePanel.Sort = &panelsModel.Sort{
+			Col:  panel.TablePanel.Sort.Col,
+			Desc: panel.TablePanel.Sort.Desc,
 		}
-		tablePanel.HiddenColumns = append(tablePanel.HiddenColumns, columnStyle.Pattern)
 	}
 
-	return *tablePanel
+	return tablePanel
 }
 
 // converts a text panel
-func (converter *Converter) convertText(panel sdk.Panel) panelsModel.Panel {
-	textPanel := &panelsModel.Panel{
-		Title:       panel.Title,
-		Id:          panelSpan(panel),
-		Type:        panel.Type,
-		Colors:      defaultColors(),
-		Description: pointToString(panel.CommonPanel.Description),
-		Transparent: panel.Transparent,
-		Decimals:    0,
-	}
-
+func (converter *Converter) convertText(panel sdk.Panel) *panelsModel.Panel {
+	var height *string
 	if panel.Height != nil {
-		textPanel.Height = *panel.Height
+		var h = panel.Height.(string)
+		height = &h
 	}
 
-	if panel.TextPanel.Mode == "markdown" {
-		textPanel.Markdown = panel.TextPanel.Content
-	} else {
-		textPanel.HTML = panel.TextPanel.Content
+	textPanel := &panelsModel.Panel{
+		CommonPanel: panelsModel.CommonPanel{
+			Title:       panel.Title,
+			Id:          int64(panel.ID),
+			Type:        panel.Type,
+			Description: panel.CommonPanel.Description,
+			Height:      height,
+			Datasource:  panel.Datasource,
+		},
 	}
 
-	return *textPanel
+	if panel.TextPanel == nil {
+		return textPanel
+	}
+
+	textPanel.TextPanel = &panelsModel.TextPanel{
+		Mode:    panel.TextPanel.Mode,
+		Content: panel.TextPanel.Content,
+	}
+
+	return textPanel
 }
 
 func (converter *Converter) convertTarget(target sdk.Target, index int) *panelsModel.Target {
@@ -657,14 +735,8 @@ func (converter *Converter) convertTarget(target sdk.Target, index int) *panelsM
 func (converter *Converter) convertPrometheusTarget(target sdk.Target, index int) *panelsModel.Target {
 	t := &panelsModel.Target{
 		// RefID: target.RefID,
-		RefID:          int64(index) + 1,
-		Datasource:     target.Datasource,
-		Hide:           target.Hide,
-		LegendFormat:   handleLegendFormat(target.LegendFormat),
-		Instant:        target.Instant,
-		Format:         target.Format,
-		Interval:       target.Interval,
-		IntervalFactor: target.IntervalFactor,
+		RefID:        int64(index) + 1,
+		LegendFormat: handleLegendFormat(target.LegendFormat),
 	}
 
 	// adjusts the query expression to adapt to the ks cluster
@@ -739,6 +811,19 @@ func pointToString(des *string) string {
 		d = *des
 	}
 	return d
+}
+
+func uintpointToInt64point(up *uint) *int64 {
+	if up != nil {
+		var t = int64(*up)
+		return &t
+	}
+	return nil
+}
+
+func intToInt64point(o int) *int64 {
+	var c = int64(o)
+	return &c
 }
 
 func defaultColors() []string {

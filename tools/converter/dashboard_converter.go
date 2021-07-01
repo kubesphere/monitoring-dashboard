@@ -433,7 +433,7 @@ func (converter *Converter) convertGraph(panel sdk.Panel, isClusterCrd bool) *pa
 	// converts yaxes
 	for _, yaxis := range panel.GraphPanel.Yaxes {
 		graph.GraphPanel.Yaxes = append(graph.GraphPanel.Yaxes, panelsModel.Axis{
-			Format:   yaxis.Format,
+			Format:   handleGraphFormat(yaxis.Format),
 			Decimals: int64(yaxis.Decimals),
 		})
 		break

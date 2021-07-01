@@ -156,7 +156,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -200,7 +200,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -231,7 +231,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -273,7 +273,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -308,7 +308,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -361,7 +361,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -407,7 +407,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -438,7 +438,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -477,7 +477,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -514,7 +514,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -550,7 +550,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: Bps
+    - format: Byte
   - bars: true
     colors:
     - '#60acfc'
@@ -587,7 +587,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: bytes
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -659,7 +659,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: bytes
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -691,7 +691,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - bars: true
     colors:
     - '#60acfc'
@@ -724,7 +724,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -763,7 +763,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -792,7 +792,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -820,7 +820,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - bars: true
     colors:
     - '#60acfc'
@@ -849,7 +849,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -892,7 +892,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: bytes
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -948,7 +948,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -975,7 +975,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1010,7 +1010,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1061,7 +1061,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1098,7 +1098,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1139,7 +1139,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: short
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1168,7 +1168,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: Bps
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1206,7 +1206,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: bytes
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1245,7 +1245,7 @@ spec:
     xaxis: {}
     yaxes:
     - decimals: 1
-      format: percent
+      format: percent (0.0-1.0)
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1279,7 +1279,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: ms
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1310,7 +1310,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: Bps
+    - format: Byte
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -1339,7 +1339,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: Bps
+    - format: Byte
   tags:
   - Percona
   - MySQL

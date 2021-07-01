@@ -1,7 +1,7 @@
 apiVersion: monitoring.kubesphere.io/v1alpha2
-kind: Dashboard
+kind: ClusterDashboard
 metadata:
-  name: nvidia-dcgm-exporter-dashboard-rev1
+  name: nvidia-dcgm-exporter-clusterdashboard-rev1-converter
   namespace: default
 spec:
   editable: true
@@ -31,7 +31,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: celsius
+    - format: none
   - datasource: ${DS_PROMETHEUS}
     id: 14
     targets:
@@ -64,7 +64,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: watt
+    - format: none
   - datasource: ${DS_PROMETHEUS}
     id: 16
     targets:
@@ -97,7 +97,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: hertz
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -123,7 +123,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: hertz
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -149,7 +149,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: percent
+    - format: percent (0.0-1.0)
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -175,7 +175,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: percent
+    - format: percent (0.0-1.0)
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -199,7 +199,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: decbytes
+    - format: none
   - colors:
     - '#60acfc'
     - '#23c2db'
@@ -224,7 +224,7 @@ spec:
     type: graph
     xaxis: {}
     yaxes:
-    - format: decbytes
+    - format: none
   templatings:
   - datasource: ${DS_PROMETHEUS}
     name: gpu

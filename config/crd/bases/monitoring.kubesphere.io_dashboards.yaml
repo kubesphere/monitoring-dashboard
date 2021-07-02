@@ -392,42 +392,48 @@ spec:
               templatings:
                 description: // Templating variables
                 items:
-                  description: TemplateVar combines above types to one struct
                   properties:
-                    all_value:
+                    allFormat:
                       type: string
-                    datasource:
-                      description: from type VariableQuery
+                    allValue:
                       type: string
-                    default:
-                      type: string
-                    default_all:
+                    auto:
                       type: boolean
-                    include_all:
+                    auto_count:
+                      type: integer
+                    datasource:
+                      type: string
+                    hide:
+                      type: integer
+                    includeAll:
                       type: boolean
                     label:
                       type: string
-                    name:
-                      description: common properties, more than one containing
+                    multi:
+                      type: boolean
+                    multiFormat:
                       type: string
+                    name:
+                      type: string
+                    options:
+                      items:
+                        properties:
+                          selected:
+                            type: boolean
+                          text:
+                            type: string
+                          value:
+                            type: string
+                        type: object
+                      type: array
                     query:
-                      description: from type VariableDatasource
                       type: string
                     regex:
                       type: string
-                    request:
-                      type: string
+                    sort:
+                      type: integer
                     type:
                       type: string
-                    values:
-                      description: from type VariableInterval
-                      items:
-                        type: string
-                      type: array
-                    values_map:
-                      additionalProperties:
-                        type: string
-                      type: object
                   type: object
                 type: array
               time:

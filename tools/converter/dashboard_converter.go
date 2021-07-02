@@ -204,117 +204,46 @@ func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, das
 	}
 }
 
-// convert diferent variables
+// convert templating variables
 func (converter *Converter) convertVariables(variables []sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	for _, variable := range variables {
-		switch variable.Type {
-		case "interval":
-			converter.convertIntervalVar(variable, dashboard)
-		case "custom":
-			converter.convertCustomVar(variable, dashboard)
-		case "query":
-			converter.convertQueryVar(variable, dashboard)
-		case "const":
-			converter.convertConstVar(variable, dashboard)
-		case "datasource":
-			converter.convertDatasourceVar(variable, dashboard)
-		default:
-			converter.logger.Warn("unhandled variable type found: skipped", zap.String("type", variable.Type), zap.String("name", variable.Name))
+		if variable.Query == nil {
+			converter.logger.Info("Templating query expr not found, skipped", zap.Any("name", variable.Name))
+			continue
 		}
+		q, ok := variable.Query.(string)
+		if !ok {
+			converter.logger.Info("Templating query expr cannot convert to string, skipped", zap.Any("query", variable.Query))
+			continue
+		}
+		var options []templatingsModel.Option
+		for _, op := range variable.Options {
+			options = append(options, templatingsModel.Option{
+				Text:     op.Text,
+				Value:    op.Value,
+				Selected: op.Selected,
+			})
+		}
+		v := templatingsModel.TemplateVar{
+			Name:        variable.Name,
+			Type:        variable.Type,
+			Auto:        variable.Auto,
+			AutoCount:   variable.AutoCount,
+			Datasource:  variable.Datasource,
+			Options:     options,
+			Query:       q,
+			IncludeAll:  variable.IncludeAll,
+			AllFormat:   variable.AllFormat,
+			AllValue:    variable.AllValue,
+			Multi:       variable.Multi,
+			MultiFormat: variable.MultiFormat,
+			Regex:       variable.Regex,
+			Label:       variable.Label,
+			Hide:        variable.Hide,
+			Sort:        variable.Sort,
+		}
+		dashboard.Templatings = append(dashboard.Templatings, v)
 	}
-}
-
-// convert interval variables
-func (converter *Converter) convertIntervalVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
-	interval := templatingsModel.TemplateVar{
-		Name:    variable.Name,
-		Type:    variable.Type,
-		Label:   variable.Label,
-		Default: defaultOption(variable.Current),
-		Values:  make([]string, 0, len(variable.Options)),
-	}
-
-	for _, opt := range variable.Options {
-		interval.Values = append(interval.Values, opt.Value)
-	}
-
-	dashboard.Templatings = append(dashboard.Templatings, interval)
-}
-
-// convert custom variables
-func (converter *Converter) convertCustomVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
-	custom := templatingsModel.TemplateVar{
-		Name:       variable.Name,
-		Label:      variable.Label,
-		Type:       variable.Type,
-		Default:    defaultOption(variable.Current),
-		ValuesMap:  make(map[string]string, len(variable.Options)),
-		AllValue:   variable.AllValue,
-		IncludeAll: variable.IncludeAll,
-	}
-
-	for _, opt := range variable.Options {
-		custom.ValuesMap[opt.Text] = opt.Value
-	}
-
-	dashboard.Templatings = append(dashboard.Templatings, custom)
-}
-
-// convert query variables
-func (converter *Converter) convertQueryVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
-	datasource := ""
-	if variable.Datasource != nil {
-		datasource = *variable.Datasource
-	}
-	var q string
-	if variable.Query != nil {
-		q = variable.Query.(string)
-	}
-
-	query := templatingsModel.TemplateVar{
-		Name:       variable.Name,
-		Label:      variable.Label,
-		Type:       variable.Type,
-		Datasource: datasource,
-		Request:    q,
-		Regex:      variable.Regex,
-		IncludeAll: variable.IncludeAll,
-		DefaultAll: variable.Current.Value == "$__all",
-		AllValue:   variable.AllValue,
-	}
-
-	dashboard.Templatings = append(dashboard.Templatings, query)
-}
-
-// convert datasource variables
-func (converter *Converter) convertDatasourceVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
-	datasource := templatingsModel.TemplateVar{
-		Name:       variable.Name,
-		Label:      variable.Label,
-		Type:       variable.Type,
-		Regex:      variable.Regex,
-		IncludeAll: variable.IncludeAll,
-	}
-
-	dashboard.Templatings = append(dashboard.Templatings, datasource)
-}
-
-// convert const variables
-func (converter *Converter) convertConstVar(variable sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
-	text := variable.Current.Value.(string)
-	constant := templatingsModel.TemplateVar{
-		Name:      variable.Name,
-		Label:     variable.Label,
-		Type:      variable.Type,
-		Default:   text,
-		ValuesMap: make(map[string]string, len(variable.Options)),
-	}
-
-	for _, opt := range variable.Options {
-		constant.ValuesMap[opt.Text] = opt.Value
-	}
-
-	dashboard.Templatings = append(dashboard.Templatings, constant)
 }
 
 //convert rows

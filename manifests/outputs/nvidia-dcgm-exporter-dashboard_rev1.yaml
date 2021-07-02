@@ -1,7 +1,7 @@
 apiVersion: monitoring.kubesphere.io/v1alpha2
-kind: ClusterDashboard
+kind: Dashboard
 metadata:
-  name: nvidia-dcgm-exporter-clusterdashboard-rev1-converter
+  name: nvidia-dcgm-exporter-dashboard-rev1
   namespace: default
 spec:
   editable: true
@@ -228,7 +228,8 @@ spec:
   templatings:
   - datasource: ${DS_PROMETHEUS}
     name: gpu
-    request: label_values(gpu)
+    query: label_values(gpu)
+    sort: 1
     type: query
   time:
     from: now-15m

@@ -1344,23 +1344,40 @@ spec:
   - Percona
   - MySQL
   templatings:
-  - default: $__auto_interval_interval
+  - allFormat: glob
+    auto: true
+    auto_count: 200
+    datasource: ${DS_PROMETHEUS}
     label: Interval
+    multiFormat: glob
     name: interval
+    options:
+    - selected: true
+      text: auto
+      value: $__auto_interval_interval
+    - text: 1s
+      value: 1s
+    - text: 5s
+      value: 5s
+    - text: 1m
+      value: 1m
+    - text: 5m
+      value: 5m
+    - text: 1h
+      value: 1h
+    - text: 6h
+      value: 6h
+    - text: 1d
+      value: 1d
+    query: 1s,5s,1m,5m,1h,6h,1d
     type: interval
-    values:
-    - $__auto_interval_interval
-    - 1s
-    - 5s
-    - 1m
-    - 5m
-    - 1h
-    - 6h
-    - 1d
-  - datasource: ${DS_PROMETHEUS}
+  - allFormat: glob
+    datasource: ${DS_PROMETHEUS}
     label: Host
+    multiFormat: regex values
     name: host
-    request: label_values(mysql_up, instance)
+    query: label_values(mysql_up, instance)
+    sort: 1
     type: query
   time:
     from: now-12h

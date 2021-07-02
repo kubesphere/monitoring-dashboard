@@ -126,7 +126,7 @@ func (src *Dashboard) ConvertTo(dstRaw conversion.Hub) error {
 	for _, temp := range src.Spec.Templatings {
 		dst.Spec.Templatings = append(dst.Spec.Templatings, v1alpha1.Templating{
 			Name:  temp.Name,
-			Query: temp.Request,
+			Query: temp.Query,
 		})
 	}
 
@@ -207,8 +207,8 @@ func (dst *Dashboard) ConvertFrom(srcRaw conversion.Hub) error {
 
 	for _, temp := range src.Spec.Templatings {
 		dst.Spec.Templatings = append(dst.Spec.Templatings, v1alpha2templatings.TemplateVar{
-			Name:    temp.Name,
-			Request: temp.Query,
+			Name:  temp.Name,
+			Query: temp.Query,
 		})
 	}
 

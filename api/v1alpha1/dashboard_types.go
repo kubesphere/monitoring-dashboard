@@ -64,44 +64,6 @@ type Panel struct {
 	SingleStat *panels.SingleStat `json:",inline"`
 }
 
-// func (p *Panel) UnmarshalJSON(data []byte) error {
-// 	if len(data) == 0 {
-// 		return nil
-// 	}
-
-// 	var t struct{ Type PanelType }
-// 	err := json.Unmarshal(data, &t)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	switch t.Type {
-// 	case PanelRow:
-// 		p.Row = &panels.Row{}
-// 		return json.Unmarshal(data, p.Row)
-// 	case PanelGraph:
-// 		p.Graph = &panels.Graph{}
-// 		return json.Unmarshal(data, p.Graph)
-// 	case PanelSingleStat:
-// 		p.SingleStat = &panels.SingleStat{}
-// 		return json.Unmarshal(data, p.SingleStat)
-// 	}
-
-// 	return json.Unmarshal(data, p)
-// }
-
-// func (p *Panel) MarshalJSON() (data []byte, err error) {
-// 	switch {
-// 	case p.Row != nil:
-// 		return json.Marshal(p.Row)
-// 	case p.Graph != nil:
-// 		return json.Marshal(p.Graph)
-// 	case p.SingleStat != nil:
-// 		return json.Marshal(p.SingleStat)
-// 	}
-// 	return json.Marshal(p)
-// }
-
 type PanelType string
 
 const (

@@ -13,7 +13,7 @@ type SingleStat struct {
 	// A collection of queries
 	//Targets []Target `json:"targets,omitempty"`
 	// Limit the decimal numbers
-	Decimals int64 `json:"decimals,omitempty"`
+	Decimals *int64 `json:"decimals,omitempty"`
 	// Display unit
 	Format string `json:"format,omitempty"`
 }

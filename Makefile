@@ -11,11 +11,20 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+IS_CLUSTER_CRD ?= false
+NAMESPACE ?= default
+INPUT ?= ./manifests/inputs
+OUTPUT ?= ./manifests/outputs
+
 all: manager
 
 # Run tests
 test: generate fmt vet manifests
 	go test ./... -coverprofile cover.out
+
+# Run convert
+convert: generate fmt vet manifests
+	go run ./cmd/converter -isClusterCrd=$(IS_CLUSTER_CRD) -namespace=$(NAMESPACE) -inputPath=$(INPUT) -outputPath=$(OUTPUT)
 
 # Build manager binary
 manager: generate fmt vet
@@ -40,7 +49,7 @@ deploy: manifests
 
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: controller-gen
-	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=controller-role webhook paths=./api/v1alpha1 paths=./api/v1alpha2 output:crd:artifacts:config=config/crd/bases
 
 # Run go fmt against code
 fmt:
@@ -71,7 +80,7 @@ ifeq (, $(shell which controller-gen))
 	CONTROLLER_GEN_TMP_DIR=$$(mktemp -d) ;\
 	cd $$CONTROLLER_GEN_TMP_DIR ;\
 	go mod init tmp ;\
-	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.4.1 ;\
+	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.6.1 ;\
 	rm -rf $$CONTROLLER_GEN_TMP_DIR ;\
 	}
 CONTROLLER_GEN=$(GOBIN)/controller-gen

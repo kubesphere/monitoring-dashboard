@@ -1,0 +1,2059 @@
+apiVersion: monitoring.kubesphere.io/v1alpha2
+kind: Dashboard
+metadata:
+  name: elasticsearch-rev4
+  namespace: default
+spec:
+  editable: true
+  panels:
+  - colors:
+    - '#d44a3a'
+    - rgba(237, 129, 40, 0.89)
+    - '#299c46'
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 53
+    sparkline: full
+    targets:
+    - expr: elasticsearch_cluster_health_status==1 or (elasticsearch_cluster_health_status==1)+4
+        or (elasticsearch_cluster_health_status==1)+22
+      refId: 1
+      step: 1m
+    title: Cluster health
+    type: singlestat
+    valueName: avg
+  - colors:
+    - '#299c46'
+    - rgba(237, 129, 40, 0.89)
+    - '#d44a3a'
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 81
+    sparkline: full
+    targets:
+    - expr: count(elasticsearch_breakers_tripped)
+      refId: 1
+      step: 1m
+    title: Tripped for breakers
+    type: singlestat
+    valueName: avg
+  - colors:
+    - rgba(50, 172, 45, 0.97)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(245, 54, 54, 0.9)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    format: percent
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 51
+    targets:
+    - expr: sum (elasticsearch_process_cpu_percent ) / count (elasticsearch_process_cpu_percent
+        )
+      refId: 1
+      step: 1m
+    title: CPU usage Avg.
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(50, 172, 45, 0.97)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(245, 54, 54, 0.9)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    format: percent
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 50
+    targets:
+    - expr: sum (elasticsearch_jvm_memory_used_bytes) / sum (elasticsearch_jvm_memory_max_bytes)
+        * 100
+      refId: 1
+      step: 1m
+    title: JVM memory used Avg.
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Number of nodes in the cluster
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 10
+    targets:
+    - expr: elasticsearch_cluster_health_number_of_nodes
+      refId: 1
+      step: 1m
+    title: Nodes
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Number of data nodes in the cluster
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 9
+    targets:
+    - expr: elasticsearch_cluster_health_number_of_data_nodes
+      refId: 1
+      step: 1m
+    title: Data nodes
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(50, 172, 45, 0.97)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(245, 54, 54, 0.9)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Cluster level changes which have not yet been executed
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 16
+    sparkline: bottom
+    targets:
+    - expr: elasticsearch_cluster_health_number_of_pending_tasks
+      refId: 1
+      step: 1m
+    title: Pending tasks
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(50, 172, 45, 0.97)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(245, 54, 54, 0.9)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    format: short
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 89
+    targets:
+    - expr: sum (elasticsearch_process_open_files_count)
+      refId: 1
+      step: 1m
+    title: Open file descriptors per cluster
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: The number of primary shards in your cluster. This is an aggregate
+      total across all indices.
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 11
+    sparkline: full
+    targets:
+    - expr: elasticsearch_cluster_health_active_primary_shards
+      refId: 1
+      step: 1m
+    title: Active primary shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Aggregate total of all shards across all indices, which includes
+      replica shards
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 39
+    sparkline: full
+    targets:
+    - expr: elasticsearch_cluster_health_active_shards
+      refId: 1
+      step: 1m
+    title: Active shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Count of shards that are being freshly created
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 40
+    sparkline: full
+    targets:
+    - expr: elasticsearch_cluster_health_initializing_shards
+      refId: 1
+      step: 1m
+    title: Initializing shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: The number of shards that are currently moving from one node to another
+      node.
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 41
+    sparkline: full
+    targets:
+    - expr: elasticsearch_cluster_health_relocating_shards
+      refId: 1
+      step: 1m
+    title: Relocating shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: Shards delayed to reduce reallocation overhead
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 42
+    sparkline: full
+    targets:
+    - expr: 'elasticsearch_cluster_health_delayed_unassigned_shards '
+      refId: 1
+      step: 1m
+    title: Delayed shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - rgba(245, 54, 54, 0.9)
+    - rgba(237, 129, 40, 0.89)
+    - rgba(50, 172, 45, 0.97)
+    datasource: ${DS_PROMETHEUS}
+    decimals: 0
+    description: The number of shards that exist in the cluster state, but cannot
+      be found in the cluster itself
+    format: none
+    gauge:
+      maxValue: 100
+      thresholdMarkers: true
+    height: "50"
+    id: 82
+    sparkline: full
+    targets:
+    - expr: 'elasticsearch_cluster_health_unassigned_shards '
+      refId: 1
+      step: 1m
+    title: Unassigned shards
+    type: singlestat
+    valueName: current
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 7
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_jvm_gc_collection_seconds_count[3m])
+      legendFormat: '{{name}} - {{gc}}'
+      refId: 1
+      step: 1m
+    title: GC count
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 27
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_jvm_gc_collection_seconds_sum[3m])
+      legendFormat: '{{name}} - {{gc}}'
+      refId: 1
+      step: 1m
+    title: GC time
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 77
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - total
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_translog_operations[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Total translog operations
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 78
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_translog_size_in_bytes[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Total translog size in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 79
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_breakers_tripped
+      legendFormat: '{{name}}: {{breaker}}'
+      refId: 1
+      step: 1m
+    title: Tripped for breakers
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 80
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_breakers_estimated_size_bytes
+      legendFormat: '{{name}}: {{breaker}}'
+      refId: 1
+      step: 1m
+    - expr: elasticsearch_breakers_limit_size_bytes
+      legendFormat: '{{name}}: limit for {{breaker}}'
+      refId: 2
+      step: 1m
+    title: Estimated size in bytes of breaker
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 30
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: elasticsearch_os_load1
+      legendFormat: 'load1: {{name}}'
+      refId: 1
+      step: 1m
+    - expr: elasticsearch_os_load5
+      legendFormat: 'load5: {{name}}'
+      refId: 2
+      step: 1m
+    - expr: elasticsearch_os_load15
+      legendFormat: 'load15: {{name}}'
+      refId: 3
+      step: 1m
+    title: Load average
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 88
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: elasticsearch_process_cpu_percent
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: CPU usage
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: percent (0.0-1.0)
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 31
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: elasticsearch_jvm_memory_used_bytes
+      legendFormat: '{{name}} used: {{area}}'
+      refId: 1
+      step: 1m
+    - expr: elasticsearch_jvm_memory_max_bytes
+      legendFormat: '{{name}} max: {{area}}'
+      refId: 2
+      step: 1m
+    - expr: elasticsearch_jvm_memory_pool_peak_used_bytes
+      legendFormat: '{{name}} peak used pool: {{pool}}'
+      refId: 3
+      step: 1m
+    title: JVM memory usage
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 54
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: elasticsearch_jvm_memory_committed_bytes
+      legendFormat: '{{name}} committed: {{area}}'
+      refId: 1
+      step: 1m
+    - expr: elasticsearch_jvm_memory_max_bytes
+      legendFormat: '{{name}} max: {{area}}'
+      refId: 2
+      step: 1m
+    title: JVM memory committed
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 32
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: 1-(elasticsearch_filesystem_data_available_bytes/elasticsearch_filesystem_data_size_bytes)
+      legendFormat: '{{name}}: {{path}}'
+      refId: 1
+      step: 1m
+    title: Disk usage
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: percent (0.0-1.0)
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 47
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_transport_tx_size_bytes_total[3m])
+      legendFormat: '{{name}}: sent '
+      refId: 1
+      step: 1m
+    - expr: -irate(elasticsearch_transport_rx_size_bytes_total[3m])
+      legendFormat: '{{name}}: received'
+      refId: 2
+      step: 1m
+    title: Network usage
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    decimals: 2
+    height: "400"
+    id: 1
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: elasticsearch_indices_docs
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Documents count on node
+    type: graph
+    xaxis: {}
+    yaxes:
+    - decimals: 2
+      format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 24
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: irate(elasticsearch_indices_indexing_index_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Documents indexed rate
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    description: Count of deleted documents on this node
+    height: "400"
+    id: 25
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: irate(elasticsearch_indices_docs_deleted[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Documents deleted rate
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    decimals: 2
+    height: "400"
+    id: 26
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: rate(elasticsearch_indices_merges_docs_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Documents merged rate
+    type: graph
+    xaxis: {}
+    yaxes:
+    - decimals: 2
+      format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 52
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: irate(elasticsearch_indices_merges_total_size_bytes_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Documents merged bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 33
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: 'irate(elasticsearch_indices_search_query_time_seconds[3m]) '
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Query time
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 5
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_indexing_index_time_seconds_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Indexing time
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 3
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_merges_total_time_seconds_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Merging time
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 87
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_store_throttle_time_seconds_total[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Throttle time for index store
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 48
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    - no_zero_series
+    lines: true
+    stack: true
+    targets:
+    - expr: rate(elasticsearch_indices_indexing_index_total[3m])
+      legendFormat: '{{name}}: indexing'
+      refId: 1
+      step: 1m
+    - expr: rate(elasticsearch_indices_search_query_total[3m])
+      legendFormat: '{{name}}: query'
+      refId: 2
+      step: 1m
+    - expr: rate(elasticsearch_indices_search_fetch_total[3m])
+      legendFormat: '{{name}}: fetch'
+      refId: 3
+      step: 1m
+    - expr: rate(elasticsearch_indices_merges_total[3m])
+      legendFormat: '{{name}}: merges'
+      refId: 4
+      step: 1m
+    - expr: rate(elasticsearch_indices_refresh_total[3m])
+      legendFormat: '{{name}}: refresh'
+      refId: 5
+      step: 1m
+    - expr: rate(elasticsearch_indices_flush_total[3m])
+      legendFormat: '{{name}}: flush'
+      refId: 6
+      step: 1m
+    - expr: rate(elasticsearch_indices_get_exists_total[3m])
+      legendFormat: '{{name}}: get_exists'
+      refId: 7
+      step: 1m
+    - expr: rate(elasticsearch_indices_get_missing_total[3m])
+      legendFormat: '{{name}}: get_missing'
+      refId: 8
+      step: 1m
+    - expr: rate(elasticsearch_indices_get_tota[3m])
+      legendFormat: '{{name}}: get'
+      refId: 9
+      step: 1m
+    - expr: rate(elasticsearch_indices_indexing_delete_total[3m])
+      legendFormat: '{{name}}: indexing_delete'
+      refId: 10
+      step: 1m
+    title: Total Operations  rate
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 49
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - current
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_indices_indexing_index_time_seconds_total[3m])
+      legendFormat: '{{name}}: indexing'
+      refId: 1
+      step: 1m
+    - expr: irate(elasticsearch_indices_search_query_time_seconds[3m])
+      legendFormat: '{{name}}: query'
+      refId: 2
+      step: 1m
+    - expr: irate(elasticsearch_indices_search_fetch_time_seconds[3m])
+      legendFormat: '{{name}}: fetch'
+      refId: 3
+      step: 1m
+    - expr: irate(elasticsearch_indices_merges_total_time_seconds_total[3m])
+      legendFormat: '{{name}}: merges'
+      refId: 4
+      step: 1m
+    - expr: irate(elasticsearch_indices_refresh_time_seconds_total[3m])
+      legendFormat: '{{name}}: refresh'
+      refId: 5
+      step: 1m
+    - expr: irate(elasticsearch_indices_flush_time_seconds[3m])
+      legendFormat: '{{name}}: flush'
+      refId: 6
+      step: 1m
+    - expr: irate(elasticsearch_indices_get_exists_time_seconds[3m])
+      legendFormat: '{{name}}: get_exists'
+      refId: 7
+      step: 1m
+    - expr: irate(elasticsearch_indices_get_time_seconds[3m])
+      legendFormat: '{{name}}: get_time'
+      refId: 8
+      step: 1m
+    - expr: irate(elasticsearch_indices_get_missing_time_seconds[3m])
+      legendFormat: '{{name}}: get_missing'
+      refId: 9
+      step: 1m
+    - expr: irate(elasticsearch_indices_indexing_delete_time_seconds_total[3m])
+      legendFormat: '{{name}}: indexing_delete'
+      refId: 10
+      step: 1m
+    - expr: irate(elasticsearch_indices_get_time_seconds[3m])
+      legendFormat: '{{name}}: get'
+      refId: 11
+      step: 1m
+    title: Total Operations time
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 45
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_thread_pool_rejected_count[3m])
+      legendFormat: '{{name}}: {{type}}'
+      refId: 1
+      step: 1m
+    title: Thread Pool operations rejected
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 46
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_thread_pool_active_count
+      legendFormat: '{{name}}: {{type}}'
+      refId: 1
+      step: 1m
+    title: Thread Pool operations queued
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: ""
+    id: 43
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_thread_pool_active_count
+      legendFormat: '{{name}}: {{type}}'
+      refId: 1
+      step: 1m
+    title: Thread Pool threads active
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 44
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: irate(elasticsearch_thread_pool_completed_count[3m])
+      legendFormat: '{{name}}: {{type}}'
+      refId: 1
+      step: 1m
+    title: Thread Pool operations completed
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 4
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: elasticsearch_indices_fielddata_memory_size_bytes
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Field data memory size
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 34
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: rate(elasticsearch_indices_fielddata_evictions[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Field data evictions
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 35
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: elasticsearch_indices_query_cache_memory_size_bytes
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Query cache size
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 36
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: rate(elasticsearch_indices_query_cache_evictions[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Query cache evictions
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    height: "400"
+    id: 84
+    legend:
+    - as_table
+    - min
+    - max
+    - avg
+    - current
+    lines: true
+    stack: true
+    targets:
+    - expr: rate(elasticsearch_indices_filter_cache_evictions[3m])
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Evictions from filter cache
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 85
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    stack: true
+    targets:
+    - expr: elasticsearch_indices_segments_count
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Count of index segments
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 86
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    stack: true
+    targets:
+    - expr: elasticsearch_indices_segments_memory_bytes
+      legendFormat: '{{name}}'
+      refId: 1
+      step: 1m
+    title: Current memory size of segments in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 75
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_docs_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Count of documents with only primary shards
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 83
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_store_size_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Total size of stored index data in bytes with only primary shards on all
+      nodes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 76
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_store_size_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Total size of stored index data in bytes with all shards on all nodes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 61
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_index_writer_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Index writer with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 62
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_index_writer_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Index writer with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 55
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_count_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Segments with only primary shards on all nodes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 56
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_count_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Segments with all shards on all nodes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 65
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of segments with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 66
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of segments with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 57
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_doc_values_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Doc values with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 58
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_doc_values_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Doc values with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 59
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_fields_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of fields with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 60
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_fields_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of fields with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 63
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_fixed_bit_set_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of fixed bit with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 64
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_fixed_bit_set_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of fixed bit with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 67
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_norms_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of norms with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 68
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_norms_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of norms with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 69
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_points_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of points with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 70
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_points_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of points with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 71
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_terms_memory_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of terms with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 72
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_terms_memory_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Number of terms with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 73
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_version_map_memory_bytes_primary
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of version map with only primary shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 74
+    legend:
+    - as_table
+    - to_the_right
+    - min
+    - max
+    - avg
+    - no_zero_series
+    lines: true
+    targets:
+    - expr: elasticsearch_indices_segment_version_map_memory_bytes_total
+      legendFormat: '{{index}}'
+      refId: 1
+      step: 1m
+    title: Size of version map with all shards on all nodes in bytes
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: Byte
+  tags:
+  - elasticsearch
+  - App
+  templatings:
+  - auto: true
+    auto_count: 30
+    label: Interval
+    name: interval
+    options:
+    - selected: true
+      text: auto
+      value: $__auto_interval
+    - text: 5m
+      value: 5m
+    - text: 10m
+      value: 10m
+    - text: 30m
+      value: 30m
+    - text: 1h
+      value: 1h
+    - text: 6h
+      value: 6h
+    - text: 12h
+      value: 12h
+    - text: 1d
+      value: 1d
+    - text: 7d
+      value: 7d
+    - text: 14d
+      value: 14d
+    - text: 30d
+      value: 30d
+    query: 5m,10m,30m,1h,6h,12h,1d,7d,14d,30d
+    type: interval
+  - datasource: ${DS_PROMETHEUS}
+    label: Сluster
+    name: cluster
+    query: label_values(elasticsearch_indices_docs,cluster)
+    sort: 1
+    type: query
+  - datasource: ${DS_PROMETHEUS}
+    includeAll: true
+    label: Node name
+    multi: true
+    name: name
+    query: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},name)
+    sort: 1
+    type: query
+  - datasource: ${DS_PROMETHEUS}
+    label: Source of metrics
+    name: instance
+    query: label_values(elasticsearch_indices_docs{cluster="$cluster", name!=""},instance)
+    sort: 1
+    type: query
+  time:
+    from: now-1h
+    to: now
+  timezone: browser
+  title: ElasticSearch

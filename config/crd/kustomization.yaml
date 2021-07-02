@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/monitoring.kubesphere.io_dashboards.yaml
+- bases/monitoring.kubesphere.io_clusterdashboards.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

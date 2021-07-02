@@ -1,0 +1,237 @@
+apiVersion: monitoring.kubesphere.io/v1alpha2
+kind: Dashboard
+metadata:
+  name: nvidia-dcgm-exporter-dashboard-rev1
+  namespace: default
+spec:
+  editable: true
+  panels:
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 12
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_GPU_TEMP
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Temperature
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - datasource: ${DS_PROMETHEUS}
+    id: 14
+    targets:
+    - expr: avg(DCGM_FI_DEV_GPU_TEMP)
+      refId: 1
+    title: GPU Avg. Temp
+    type: singlestat
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 10
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_POWER_USAGE
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Power Usage
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - datasource: ${DS_PROMETHEUS}
+    id: 16
+    targets:
+    - expr: sum(DCGM_FI_DEV_POWER_USAGE)
+      refId: 1
+    title: GPU Power Total
+    type: singlestat
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 2
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_SM_CLOCK
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU SM Clocks
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 4
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_MEM_CLOCK
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Memory Clocks
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 6
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_GPU_UTIL
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Utilization
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: percent (0.0-1.0)
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 8
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    - current
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_MEM_COPY_UTIL
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Mem Cpy Utilization
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: percent (0.0-1.0)
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 18
+    legend:
+    - to_the_right
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_FB_USED
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Framebuffer Mem Used
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    datasource: ${DS_PROMETHEUS}
+    id: 20
+    legend:
+    - as_table
+    - to_the_right
+    - max
+    - avg
+    lines: true
+    targets:
+    - expr: DCGM_FI_DEV_FB_USED
+      legendFormat: GPU {{gpu}}
+      refId: 1
+    title: GPU Framebuffer Mem Free
+    type: graph
+    xaxis: {}
+    yaxes:
+    - format: none
+  templatings:
+  - datasource: ${DS_PROMETHEUS}
+    name: gpu
+    query: label_values(gpu)
+    sort: 1
+    type: query
+  time:
+    from: now-15m
+    to: now
+  title: NVIDIA DCGM Exporter Dashboard

@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dashboard-editor-role
+rules:
+- apiGroups:
+  - monitoring.kubesphere.io
+  resources:
+  - dashboards
+  - clusterdashboards
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - monitoring.kubesphere.io
+  resources:
+  - dashboards/status
+  - clusterdashboards/status
+  verbs:
+  - get

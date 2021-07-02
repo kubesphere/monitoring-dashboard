@@ -90,6 +90,7 @@ type Templating struct {
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // Dashboard is the Schema for the dashboards API
 type Dashboard struct {

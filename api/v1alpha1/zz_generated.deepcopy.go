@@ -191,7 +191,7 @@ func (in *Panel) DeepCopyInto(out *Panel) {
 	if in.SingleStat != nil {
 		in, out := &in.SingleStat, &out.SingleStat
 		*out = new(panels.SingleStat)
-		**out = **in
+		(*in).DeepCopyInto(*out)
 	}
 }
 

@@ -281,7 +281,7 @@ or:
 
 ### Integration with kubesphere backend
 
-In addition to the command line above, the method `ConvertFromJson` located at `tools/converter/dashboard_converter.go` can read bytes from Grafana dashboard templates, and convert it to two bytes types, including `OutputJson` and `OutputYaml`, therefore frontend developers can make visual presentations as needed.
+In addition to the command line above, the method `ConvertToDashboard` located at `tools/converter/dashboard_converter.go` can read bytes from Grafana dashboard templates, and convert to a `Dashboard` model, therefore the frontend developers can make visual presentations as needed.
 
 ## Development
 

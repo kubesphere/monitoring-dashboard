@@ -73,7 +73,7 @@ func (converter *Converter) ConvertToDashboard(content []byte, isClusterCrd bool
 
 }
 
-// ConvertKubsphereDashboardFromJson converts the input json content to json bytes content
+// ConvertDashboardToJson converts the input json content to json bytes content
 func (converter *Converter) ConvertDashboardToJson(content []byte, isClusterCrd bool, ns string, name string) error {
 	manifest, err := converter.ConvertToDashboard(content, isClusterCrd, ns, name)
 	if err != nil {
@@ -90,7 +90,7 @@ func (converter *Converter) ConvertDashboardToJson(content []byte, isClusterCrd 
 	return nil
 }
 
-// ConvertKubsphereDashboardFromJson converts the input json content to yaml bytes content
+// ConvertDashboardToYaml converts the input json content to yaml bytes content
 func (converter *Converter) ConvertDashboardToYaml(content []byte, isClusterCrd bool, ns string, name string) error {
 	err := converter.ConvertDashboardToJson(content, isClusterCrd, ns, name)
 	if err != nil {
@@ -107,7 +107,7 @@ func (converter *Converter) ConvertDashboardToYaml(content []byte, isClusterCrd 
 	return nil
 }
 
-// ConvertKubsphereDashboardFromFile converts the input json file to yaml/json bytes content
+// ConvertFromFile converts the input json file to yaml/json bytes content
 func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, ns string, name string) error {
 	content, err := ioutil.ReadAll(input)
 	if err != nil {
@@ -124,7 +124,7 @@ func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, 
 	return nil
 }
 
-// ConvertKubsphereDashboardManifests converts to a k8s mainfest file
+// ConvertToKubsphereDashboardManifests converts to a k8s mainfest file
 func (converter *Converter) ConvertToKubsphereDashboardManifests(input io.Reader, output io.Writer, isClusterCrd bool, ns string, name string) error {
 
 	err := converter.ConvertFromFile(input, isClusterCrd, ns, name)

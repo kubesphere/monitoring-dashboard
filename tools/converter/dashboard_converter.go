@@ -39,13 +39,13 @@ func NewConverter(logger *zap.Logger) *Converter {
 	}
 }
 
-// ConvertKubsphereDashboardFromJson: this method converts the input json content to a bytes content
-func (converter *Converter) ConvertFromJson(content []byte, isClusterCrd bool, ns string, name string) error {
+// ConvertToDashboard converts the input json content to Dashboard model
+func (converter *Converter) ConvertToDashboard(content []byte, isClusterCrd bool, ns string, name string) (*k8sDashboard, error) {
 	// convert to a dashboard
 	dashboard, err := converter.convert(content, isClusterCrd)
 	if err != nil {
 		converter.logger.Error("could parse input", zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	apiVersion := v1alpha2.GroupVersion.Group + "/" + v1alpha2.GroupVersion.Version
@@ -64,33 +64,50 @@ func (converter *Converter) ConvertFromJson(content []byte, isClusterCrd bool, n
 	}
 	metadata["name"] = name
 
-	manifest := k8sDashboard{
+	return &k8sDashboard{
 		APIVersion: apiVersion,
 		Kind:       kind,
 		Metadata:   metadata,
 		Spec:       dashboard,
-	}
+	}, nil
 
+}
+
+// ConvertKubsphereDashboardFromJson converts the input json content to json bytes content
+func (converter *Converter) ConvertDashboardToJson(content []byte, isClusterCrd bool, ns string, name string) error {
+	manifest, err := converter.ConvertToDashboard(content, isClusterCrd, ns, name)
+	if err != nil {
+		converter.logger.Error("could not convert json content to dashboard", zap.Error(err))
+		return err
+	}
 	convertedJson, err := json.Marshal(manifest)
 	if err != nil {
-		converter.logger.Error("could not marshal dashboard to yaml", zap.Error(err))
+		converter.logger.Error("could not marshal dashboard to json", zap.Error(err))
 		return err
 	}
 
 	converter.OutputJson = convertedJson
+	return nil
+}
 
-	convertedYaml, err := yamlConverter.JSONToYAML(convertedJson)
+// ConvertKubsphereDashboardFromJson converts the input json content to yaml bytes content
+func (converter *Converter) ConvertDashboardToYaml(content []byte, isClusterCrd bool, ns string, name string) error {
+	err := converter.ConvertDashboardToJson(content, isClusterCrd, ns, name)
+	if err != nil {
+		converter.logger.Error("could not marshal dashboard to json", zap.Error(err))
+		return err
+	}
+	convertedYaml, err := yamlConverter.JSONToYAML(converter.OutputJson)
 	if err != nil {
 		converter.logger.Error("could not convert json to yaml", zap.Error(err))
 		return err
 	}
 
 	converter.OutputYaml = convertedYaml
-
 	return nil
 }
 
-// ConvertKubsphereDashboardFromFile: this method converts the input json file to a bytes content
+// ConvertKubsphereDashboardFromFile converts the input json file to yaml/json bytes content
 func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, ns string, name string) error {
 	content, err := ioutil.ReadAll(input)
 	if err != nil {
@@ -98,7 +115,7 @@ func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, 
 		return err
 	}
 
-	err = converter.ConvertFromJson(content, isClusterCrd, ns, name)
+	err = converter.ConvertDashboardToYaml(content, isClusterCrd, ns, name)
 	if err != nil {
 		converter.logger.Error("could not convert from input", zap.Error(err))
 		return err
@@ -107,7 +124,7 @@ func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, 
 	return nil
 }
 
-// ConvertKubsphereDashboardManifests: this method converts to a k8s mainfest file
+// ConvertKubsphereDashboardManifests converts to a k8s mainfest file
 func (converter *Converter) ConvertToKubsphereDashboardManifests(input io.Reader, output io.Writer, isClusterCrd bool, ns string, name string) error {
 
 	err := converter.ConvertFromFile(input, isClusterCrd, ns, name)
@@ -121,7 +138,7 @@ func (converter *Converter) ConvertToKubsphereDashboardManifests(input io.Reader
 	return nil
 }
 
-// convert: this method reads a input Converter file, then extract needed fields to the yaml model
+// convert reads a input Converter file, then extract needed fields to the yaml model
 func (converter *Converter) convert(content []byte, isClusterCrd bool) (*v1alpha2.DashboardSpec, error) {
 
 	board := &sdk.Board{}

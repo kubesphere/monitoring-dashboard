@@ -27,16 +27,13 @@ type k8sDashboard struct {
 
 // Converter struct: this struct has a log property, so other newly added methods can access this log
 type Converter struct {
-	logger     *zap.Logger
 	OutputJson []byte
 	OutputYaml []byte
 }
 
 // NewConverter: new a Converter struct object with a logger object
 func NewConverter(logger *zap.Logger) *Converter {
-	return &Converter{
-		logger: logger,
-	}
+	return &Converter{}
 }
 
 // ConvertToDashboard converts the input json content to Dashboard model
@@ -44,8 +41,7 @@ func (converter *Converter) ConvertToDashboard(content []byte, isClusterCrd bool
 	// convert to a dashboard
 	dashboard, err := converter.convert(content, isClusterCrd)
 	if err != nil {
-		converter.logger.Error("could parse input", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("could parse input: %s", err.Error())
 	}
 
 	apiVersion := v1alpha2.GroupVersion.Group + "/" + v1alpha2.GroupVersion.Version
@@ -77,13 +73,11 @@ func (converter *Converter) ConvertToDashboard(content []byte, isClusterCrd bool
 func (converter *Converter) ConvertDashboardToJson(content []byte, isClusterCrd bool, ns string, name string) error {
 	manifest, err := converter.ConvertToDashboard(content, isClusterCrd, ns, name)
 	if err != nil {
-		converter.logger.Error("could not convert json content to dashboard", zap.Error(err))
-		return err
+		return fmt.Errorf("could not convert json content to dashboard: %s", err.Error())
 	}
 	convertedJson, err := json.Marshal(manifest)
 	if err != nil {
-		converter.logger.Error("could not marshal dashboard to json", zap.Error(err))
-		return err
+		return fmt.Errorf("could not marshal dashboard to json: %s", err.Error())
 	}
 
 	converter.OutputJson = convertedJson
@@ -94,13 +88,11 @@ func (converter *Converter) ConvertDashboardToJson(content []byte, isClusterCrd 
 func (converter *Converter) ConvertDashboardToYaml(content []byte, isClusterCrd bool, ns string, name string) error {
 	err := converter.ConvertDashboardToJson(content, isClusterCrd, ns, name)
 	if err != nil {
-		converter.logger.Error("could not marshal dashboard to json", zap.Error(err))
-		return err
+		return fmt.Errorf("could not marshal dashboard to json: %s", err.Error())
 	}
 	convertedYaml, err := yamlConverter.JSONToYAML(converter.OutputJson)
 	if err != nil {
-		converter.logger.Error("could not convert json to yaml", zap.Error(err))
-		return err
+		return fmt.Errorf("could not convert json to yaml: %s", err.Error())
 	}
 
 	converter.OutputYaml = convertedYaml
@@ -111,14 +103,12 @@ func (converter *Converter) ConvertDashboardToYaml(content []byte, isClusterCrd 
 func (converter *Converter) ConvertFromFile(input io.Reader, isClusterCrd bool, ns string, name string) error {
 	content, err := ioutil.ReadAll(input)
 	if err != nil {
-		converter.logger.Error("could not read input", zap.Error(err))
-		return err
+		return fmt.Errorf("could not read input: %s", err.Error())
 	}
 
 	err = converter.ConvertDashboardToYaml(content, isClusterCrd, ns, name)
 	if err != nil {
-		converter.logger.Error("could not convert from input", zap.Error(err))
-		return err
+		return fmt.Errorf("could not convert from input: %s", err.Error())
 	}
 
 	return nil
@@ -143,8 +133,7 @@ func (converter *Converter) convert(content []byte, isClusterCrd bool) (*v1alpha
 
 	board := &sdk.Board{}
 	if err := json.Unmarshal(content, board); err != nil {
-		converter.logger.Error("could not unmarshall dashboard", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("could not unmarshall dashboard: %s", err.Error())
 	}
 
 	// a yaml model
@@ -190,7 +179,6 @@ func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, das
 		}
 
 		if annotation.Type != "tags" {
-			converter.logger.Warn("unhandled annotation type: skipped", zap.String("type", annotation.Type), zap.String("name", annotation.Name))
 			continue
 		}
 
@@ -225,12 +213,10 @@ func (converter *Converter) convertAnnotations(annotations []sdk.Annotation, das
 func (converter *Converter) convertVariables(variables []sdk.TemplateVar, dashboard *v1alpha2.DashboardSpec) {
 	for _, variable := range variables {
 		if variable.Query == nil {
-			converter.logger.Info("Templating query expr not found, skipped", zap.Any("name", variable.Name))
 			continue
 		}
 		q, ok := variable.Query.(string)
 		if !ok {
-			converter.logger.Info("Templating query expr cannot convert to string, skipped", zap.Any("query", variable.Query))
 			continue
 		}
 		var options []templatingsModel.Option
@@ -321,7 +307,6 @@ func (converter *Converter) convertDataPanel(panel sdk.Panel, isClusterCrd bool)
 		if panel.OfType == sdk.CustomType {
 			return converter.convertCustom(panel, isClusterCrd), true
 		}
-		converter.logger.Warn("unhandled panel type: skipped", zap.String("type", panel.Type), zap.String("title", panel.Title))
 	}
 	return &panelsModel.Panel{}, false
 }
@@ -674,7 +659,6 @@ func (converter *Converter) convertText(panel sdk.Panel) *panelsModel.Panel {
 
 func (converter *Converter) convertTarget(target sdk.Target, index int) *panelsModel.Target {
 	// looks like a prometheus target
-	converter.logger.Info("Only supported target type: prometheus", zap.Any("target", target))
 	return converter.convertPrometheusTarget(target, index)
 }
 

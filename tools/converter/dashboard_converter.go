@@ -11,7 +11,6 @@ import (
 	yamlConverter "github.com/ghodss/yaml"
 	"github.com/grafana-tools/sdk"
 	"github.com/mitchellh/mapstructure"
-	"go.uber.org/zap"
 	v1alpha2 "kubesphere.io/monitoring-dashboard/api/v1alpha2"
 	ansModel "kubesphere.io/monitoring-dashboard/api/v1alpha2/annotations"
 	panelsModel "kubesphere.io/monitoring-dashboard/api/v1alpha2/panels"
@@ -32,7 +31,7 @@ type Converter struct {
 }
 
 // NewConverter: new a Converter struct object with a logger object
-func NewConverter(logger *zap.Logger) *Converter {
+func NewConverter() *Converter {
 	return &Converter{}
 }
 

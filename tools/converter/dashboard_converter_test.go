@@ -6,7 +6,6 @@ import (
 
 	"github.com/grafana-tools/sdk"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 	v1alpha2 "kubesphere.io/monitoring-dashboard/api/v1alpha2"
 )
 
@@ -21,7 +20,7 @@ func defaultVar(varType string) sdk.TemplateVar {
 func TestConvertInvalidJSONToKubsphereDashboard(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	err := converter.ConvertToKubsphereDashboardManifests(bytes.NewBufferString(""), bytes.NewBufferString(""), false, "default", "test-dashboard")
 
 	req.Error(err)
@@ -30,7 +29,7 @@ func TestConvertInvalidJSONToKubsphereDashboard(t *testing.T) {
 func TestConvertValidJSONToKubsphereClusterManifest(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	err := converter.ConvertToKubsphereDashboardManifests(bytes.NewBufferString("{}"), bytes.NewBufferString(""), true, "default", "test-cluster-dashboard")
 
 	req.NoError(err)
@@ -49,7 +48,7 @@ func TestConvertGeneralSettings(t *testing.T) {
 		Value: "5s",
 	}
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertGeneralSettings(board, dashboard)
@@ -73,7 +72,7 @@ func TestConvertQueryVar(t *testing.T) {
 	variable.Datasource = &datasource
 	variable.Query = "prom_query"
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertVariables([]sdk.TemplateVar{variable}, dashboard)
@@ -95,7 +94,7 @@ func TestConvertQueryVar(t *testing.T) {
 func TestConvertTargetWithPrometheusTarget(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	target := sdk.Target{
 		Expr:         "prometheus_query",
@@ -117,7 +116,7 @@ func TestConvertTagAnnotationIgnoresBuiltIn(t *testing.T) {
 	annotation := sdk.Annotation{Name: "Annotations & Alerts"}
 	dashboard := &v1alpha2.DashboardSpec{}
 
-	NewConverter(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
+	NewConverter().convertAnnotations([]sdk.Annotation{annotation}, dashboard)
 
 	req.Len(dashboard.Annotations, 0)
 }
@@ -128,7 +127,7 @@ func TestConvertTagAnnotationIgnoresUnknownTypes(t *testing.T) {
 	annotation := sdk.Annotation{Name: "Will be ignored", Type: "dashboard"}
 	dashboard := &v1alpha2.DashboardSpec{}
 
-	NewConverter(zap.NewNop()).convertAnnotations([]sdk.Annotation{annotation}, dashboard)
+	NewConverter().convertAnnotations([]sdk.Annotation{annotation}, dashboard)
 
 	req.Len(dashboard.Annotations, 0)
 }
@@ -136,7 +135,7 @@ func TestConvertTagAnnotationIgnoresUnknownTypes(t *testing.T) {
 func TestConvertTagAnnotation(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	datasource := "-- Grafana --"
 	annotation := sdk.Annotation{
@@ -160,7 +159,7 @@ func TestConvertTagAnnotation(t *testing.T) {
 func TestConvertLegend(t *testing.T) {
 	req := require.New(t)
 
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	rawLegend := sdk.Legend{
 		AlignAsTable: true,
@@ -185,7 +184,7 @@ func TestConvertLegend(t *testing.T) {
 
 func TestConvertCanHideLegend(t *testing.T) {
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 
 	legend := converter.convertLegend(sdk.Legend{Show: false})
 	req.ElementsMatch([]string{"hide"}, legend)
@@ -193,7 +192,7 @@ func TestConvertCanHideLegend(t *testing.T) {
 
 func TestConvertPanelsAreEmpty(t *testing.T) {
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	var dashboard *v1alpha2.DashboardSpec
 	var panels []*sdk.Panel
 	converter.convertPanels(panels, dashboard, false)
@@ -215,7 +214,7 @@ func TestConvertBarGaugePanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(*dashboard.Panels[0].CommonPanel.Datasource, datasource)
@@ -236,7 +235,7 @@ func TestConvertGraphPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(*dashboard.Panels[0].CommonPanel.Datasource, datasource)
@@ -257,7 +256,7 @@ func TestConvertSinglestatPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(*dashboard.Panels[0].CommonPanel.Datasource, datasource)
@@ -278,7 +277,7 @@ func TestConvertTablePanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(*dashboard.Panels[0].CommonPanel.Datasource, datasource)
@@ -301,7 +300,7 @@ func TestConvertTextPanel(t *testing.T) {
 	}
 
 	req := require.New(t)
-	converter := NewConverter(zap.NewNop())
+	converter := NewConverter()
 	dashboard := &v1alpha2.DashboardSpec{}
 	converter.convertPanels(panels, dashboard, false)
 	req.Equal(dashboard.Panels[0].TextPanel.Content, "a markdown content for test")

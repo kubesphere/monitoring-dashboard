@@ -184,7 +184,7 @@ func (c *ConverterContainer) toKubesphereDashboardFile(inputFile string, logger 
 		logger.Fatal("Could not open output file", zap.Error(err))
 	}
 
-	conv := converter.NewConverter(logger)
+	conv := converter.NewConverter()
 
 	if err := conv.ConvertToKubsphereDashboardManifests(input, output, isClusterCrd, ns, name); err != nil {
 		logger.Fatal("Could not convert dashboard", zap.Error(err))

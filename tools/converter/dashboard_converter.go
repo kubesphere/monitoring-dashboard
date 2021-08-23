@@ -773,7 +773,7 @@ func convertExpr(expr string) string {
 	}
 
 	// if contains irate/rate/count func, just removes `\{.*\}`
-	pat2 := regexp.MustCompile(`\{.*?\}`)
+	pat2 := regexp.MustCompile(`\{.*\}`)
 	if matchCommon := pat2.Match([]byte(expr)); matchCommon {
 		expr = pat2.ReplaceAllString(expr, "")
 	}

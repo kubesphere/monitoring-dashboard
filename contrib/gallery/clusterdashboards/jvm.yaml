@@ -1,0 +1,231 @@
+apiVersion: monitoring.kubesphere.io/v1alpha2
+kind: ClusterDashboard
+metadata:
+  name: jvm-dashboard
+spec:
+  panels:
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 29
+    lines: true
+    targets:
+    - expr: os_system_cpu_load
+      legendFormat: System
+      refId: 1
+      step: 1m
+    - expr: os_process_cpu_load
+      legendFormat: JVM
+      refId: 2
+      step: 1m
+    title: CPU load
+    type: graph
+    yaxes:
+    - decimals: 1
+      format: percent (0.0-1.0)
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 8
+    lines: true
+    targets:
+    - expr: jvm_memory_bytes_used
+      legendFormat: Used of {{area}}
+      refId: 1
+      step: 1m
+    - expr: ' jvm_memory_bytes_max'
+      legendFormat: Max of {{area}}
+      refId: 2
+      step: 1m
+    - expr: jvm_memory_bytes_used / jvm_memory_bytes_max >= 0
+      legendFormat: Usage of {{area}} %
+      refId: 3
+      step: 1m
+    title: Memory area
+    type: graph
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 5
+    lines: true
+    targets:
+    - expr: increase(jvm_gc_collection_seconds_sum[3m])
+      legendFormat: '{{gc}}'
+      refId: 1
+      step: 1m
+    title: GC time
+    type: graph
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 2
+    lines: true
+    targets:
+    - expr: jvm_memory_pool_bytes_max
+      legendFormat: Max of {{pool}}
+      refId: 1
+      step: 1m
+    - expr: jvm_memory_pool_bytes_used
+      legendFormat: Used of {{pool}}
+      refId: 2
+      step: 1m
+    - expr: jvm_memory_pool_bytes_committed
+      legendFormat: Committed of {{pool}}
+      refId: 3
+      step: 1m
+    title: 'Memory pool '
+    type: graph
+    yaxes:
+    - format: Byte
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 4
+    lines: true
+    targets:
+    - expr: jvm_classes_loaded
+      legendFormat: loaded
+      refId: 1
+      step: 1m
+    title: Class loading
+    type: graph
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 6
+    lines: true
+    targets:
+    - expr: increase(jvm_gc_collection_seconds_count[3m])
+      legendFormat: '{{gc}}'
+      refId: 1
+      step: 1m
+    title: GC count increase
+    type: graph
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 3
+    lines: true
+    targets:
+    - expr: jvm_threads_current
+      legendFormat: JVM current threads
+      refId: 1
+      step: 1m
+    - expr: jvm_threads_daemon
+      legendFormat: JVM daemon threads
+      refId: 2
+      step: 1m
+    - expr: jvm_threads_deadlocked
+      legendFormat: JVM deadlocked threads
+      refId: 3
+      step: 1m
+    title: Threads used
+    type: graph
+    yaxes:
+    - format: none
+  - colors:
+    - '#60acfc'
+    - '#23c2db'
+    - '#64d5b2'
+    - '#d5ec5a'
+    - '#ffb64e'
+    - '#fb816d'
+    - '#d15c7f'
+    id: 44
+    lines: true
+    targets:
+    - expr: os_total_physical_memory_bytes
+      legendFormat: Total physical memory
+      refId: 1
+      step: 1m
+    - expr: os_committed_virtual_memory_bytes
+      legendFormat: Committed virtual memory
+      refId: 2
+      step: 1m
+    - expr: os_free_physical_memory_bytes
+      legendFormat: Free physical memory
+      refId: 3
+      step: 1m
+    title: Physical memory
+    type: graph
+    yaxes:
+    - format: none
+  - format: none
+    id: 19
+    targets:
+    - expr: label_join(jvm_info, "jdk", ", ", "vendor", "runtime", "version")
+      refId: 1
+      step: 1m
+    title: JVM Version
+    type: singlestat
+  - format: none
+    id: 39
+    targets:
+    - expr: os_available_processors
+      refId: 1
+      step: 1m
+    title: Available CPUs
+    type: singlestat
+  - format: none
+    id: 23
+    targets:
+    - expr: os_system_load_average
+      refId: 1
+      step: 1m
+    title: System load average
+    type: singlestat
+  - format: none
+    id: 38
+    targets:
+    - expr: os_open_file_descriptor_count
+      refId: 1
+      step: 1m
+    title: Open file descriptors
+    type: singlestat
+  time:
+    from: now-15m
+    to: now
+  title: JVM dashboard

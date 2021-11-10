@@ -1,0 +1,398 @@
+apiVersion: monitoring.kubesphere.io/v1alpha1
+kind: ClusterDashboard
+metadata:
+  annotations:
+    kubesphere.io/creator: admin
+    kubesphere.io/description: longhorn
+  name: longhorn-monitor
+spec:
+  datasource: prometheus
+  panels:
+    - format: none
+      id: 2
+      targets:
+        - expr: |
+            count(longhorn_volume_capacity_bytes) OR on() vector(0)
+      title: Total Number Of Volumes
+      type: singlestat
+    - format: none
+      id: 4
+      targets:
+        - expr: count(longhorn_volume_robustness==1) OR on() vector(0)
+      title: Number Of Healthy Volumes
+      type: singlestat
+    - format: none
+      id: 5
+      targets:
+        - expr: count(longhorn_volume_robustness==2) OR on() vector(0)
+      title: Number Of Degraded Volumes
+      type: singlestat
+    - format: none
+      id: 6
+      targets:
+        - expr: count(longhorn_volume_robustness==3) OR on() vector(0)
+      title: Number Of Fault Volumes
+      type: singlestat
+    - format: none
+      id: 7
+      targets:
+        - expr: count(longhorn_volume_state==2) OR on() vector(0)
+      title: Number Of Attached Volumes
+      type: singlestat
+    - format: none
+      id: 8
+      targets:
+        - expr: count(longhorn_volume_state==3) OR on() vector(0)
+      title: Number Of Detached Volumes
+      type: singlestat
+    - format: none
+      id: 12
+      targets:
+        - expr: avg(longhorn_node_count_total) OR on() vector(0)
+      title: Total Number Of Nodes
+      type: singlestat
+    - format: none
+      id: 13
+      targets:
+        - expr: >-
+            count(longhorn_node_status{condition="allowScheduling"}==0) OR on()
+            vector(0)
+      title: Number Of Disabled Nodes
+      type: singlestat
+    - format: none
+      id: 14
+      targets:
+        - expr: >-
+            (count(longhorn_node_status{condition="schedulable"}==1) OR on()
+            vector(0)) -
+            (count(longhorn_node_status{condition="allowScheduling"}==0) OR on()
+            vector(0))
+      title: Number Of Schedulable Nodes
+      type: singlestat
+    - format: none
+      id: 15
+      targets:
+        - expr: >-
+            (avg(longhorn_node_count_total) OR on() vector(0)) -
+            (count(longhorn_node_status{condition="ready"}==1) OR on()
+            vector(0))
+      title: Number Of Failed Nodes
+      type: singlestat
+    - id: 23
+      title: CPU & MEMORY
+      type: row
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 24
+      lines: true
+      targets:
+        - expr: >-
+            (longhorn_node_cpu_usage_millicpu /
+            longhorn_node_cpu_capacity_millicpu) * 100
+          legendFormat: '{{node}}'
+          refId: 1
+          step: 1m
+      title: Node CPU Usage/Capacity
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 25
+      lines: true
+      targets:
+        - expr: >-
+            ( longhorn_node_memory_usage_bytes /
+            longhorn_node_memory_capacity_bytes ) * 100
+          legendFormat: '{{node}}'
+          refId: 1
+          step: 1m
+      title: Node Memory Usage/Capacity
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Instance managers are pods that contains the engine and replica
+        processes of Longhorn volumes. See more at
+        https://longhorn.io/docs/1.0.2/concepts/#11-the-longhorn-manager-and-the-longhorn-engine
+      id: 26
+      lines: true
+      targets:
+        - expr: longhorn_instance_manager_cpu_usage_millicpu
+          legendFormat: '{{instance_manager}}'
+          refId: 1
+          step: 1m
+      title: Instance Manager CPU Usage
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Instance managers are pods that contains the engine and replica
+        processes of Longhorn volumes. See more at
+        https://longhorn.io/docs/1.0.2/concepts/#11-the-longhorn-manager-and-the-longhorn-engine 
+      id: 27
+      lines: true
+      targets:
+        - expr: >-
+            (longhorn_instance_manager_cpu_usage_millicpu/longhorn_instance_manager_cpu_requests_millicpu)*100
+          legendFormat: '{{instance_manager}}'
+          refId: 1
+          step: 1m
+      title: Instance Manager CPU Usage/Request
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Instance managers are pods that contains the engine and replica
+        processes of Longhorn volumes. See more at
+        https://longhorn.io/docs/1.0.2/concepts/#11-the-longhorn-manager-and-the-longhorn-engine 
+      id: 28
+      lines: true
+      targets:
+        - expr: longhorn_instance_manager_memory_usage_bytes
+          legendFormat: '{{instance_manager}}'
+          refId: 1
+          step: 1m
+      title: Instance Manager Memory Usage
+      type: graph
+      yaxes:
+        - format: Byte
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Longhorn manager pods manage the control plane of the Longhorn system.
+        e.g. Volume scheduling, attaching, detaching, backup, etc,..
+      id: 29
+      lines: true
+      targets:
+        - expr: longhorn_manager_cpu_usage_millicpu
+          legendFormat: '{{manager}}'
+          refId: 1
+          step: 1m
+      title: Longhorn Manager CPU Usage
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Longhorn manager pods manage the control plane of the Longhorn system.
+        e.g. Volume scheduling, attaching, detaching, backup, etc,..
+      id: 30
+      lines: true
+      targets:
+        - expr: longhorn_manager_memory_usage_bytes
+          legendFormat: '{{manager}}'
+          refId: 1
+          step: 1m
+      title: Longhorn Manager Memory Usage
+      type: graph
+      yaxes:
+        - format: Byte
+    - id: 9
+      title: VOLUMES
+      type: row
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: >-
+        Note that Longhorn volume actual size is not the size of the filesystem
+        inside a Longhorn volume.  See more at :
+        https://longhorn.io/docs/1.0.2/volumes-and-nodes/volume-size/#volume-actual-size
+      id: 1
+      lines: true
+      targets:
+        - expr: >-
+            ( (avg by (volume) (longhorn_volume_actual_size_bytes))/ (avg by
+            (volume) (longhorn_volume_capacity_bytes)) ) *100
+          legendFormat: '{{volume}}'
+          refId: 1
+          step: 1m
+      title: Volume Actual Size/Capacity
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - bars: true
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: The capacity of each Longhorn volume
+      id: 3
+      stack: true
+      targets:
+        - expr: avg by (volume) (longhorn_volume_capacity_bytes)
+          legendFormat: '{{volume}}'
+          refId: 1
+          step: 1m
+      title: Volume Capacity
+      type: graph
+      yaxes:
+        - format: Byte
+    - id: 10
+      title: NODES
+      type: row
+    - bars: true
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 18
+      targets:
+        - expr: longhorn_node_storage_capacity_bytes
+          legendFormat: '{{node}}'
+          refId: 1
+          step: 1m
+      title: Node Capacity
+      type: graph
+      yaxes:
+        - format: Byte
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 16
+      lines: true
+      stack: true
+      targets:
+        - expr: >-
+            (longhorn_node_storage_usage_bytes/longhorn_node_storage_capacity_bytes)
+            * 100
+          legendFormat: '{{node}}'
+          refId: 1
+          step: 1m
+      title: Node Storage Usage/Capacity
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 19
+      lines: true
+      targets:
+        - expr: count by (node) (longhorn_volume_state==2)
+          legendFormat: '{{node}}'
+          refId: 1
+          step: 1m
+      title: Number of Volumes Per Node
+      type: graph
+      yaxes:
+        - format: none
+    - id: 20
+      title: DISKS
+      type: row
+    - colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      description: The capacity of each Longhorn volume
+      id: 21
+      lines: true
+      targets:
+        - expr: (longhorn_disk_usage_bytes/longhorn_disk_capacity_bytes)*100
+          legendFormat: '{{disk}}'
+          refId: 1
+          step: 1m
+      title: Disk Space Usage
+      type: graph
+      yaxes:
+        - format: percent (0-100)
+    - bars: true
+      colors:
+        - '#60acfc'
+        - '#23c2db'
+        - '#64d5b2'
+        - '#d5ec5a'
+        - '#ffb64e'
+        - '#fb816d'
+        - '#d15c7f'
+      id: 22
+      stack: true
+      targets:
+        - expr: longhorn_disk_capacity_bytes
+          legendFormat: '{{disk}}'
+          refId: 1
+          step: 1m
+      title: Disk Capacity
+      type: graph
+      yaxes:
+        - format: Byte
+  time:
+    from: now-30m
+    to: now
+  title: Custom Monitoring
